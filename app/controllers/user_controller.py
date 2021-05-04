@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm.session import Session
+from typing import List
 
 from app.domain.config import *
 from app.domain.constants import *
@@ -70,6 +71,34 @@ async def token(
 
 
 @controller.get(
+    path="",
+    dependencies=[Depends(BearerAuth())],
+    responses={
+        200: {
+            "model": List[user_dtos.UserResponse]
+        },
+        400: {
+            "model": error.ErrorResponse
+        },
+        404: {
+            "model": error.ErrorResponse
+        },
+        422: {
+            "model": error.ValidationErrorResponse
+        }
+    }
+)
+async def get_all(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Get user"""
+
+    users = user_service.get_users(db, request)
+    return users
+
+
+@controller.get(
     path="/{id}",
     dependencies=[Depends(BearerAuth())],
     responses={
@@ -95,7 +124,6 @@ async def get(
     """Get user"""
 
     user = user_service.get_user(db, id, request)
-
     return user
 
 

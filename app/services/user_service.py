@@ -1,6 +1,7 @@
 from fastapi import Request
 from pydantic import EmailStr
 from sqlalchemy.orm.session import Session
+from typing import List
 
 from app.data import models
 from app.dtos import user_dtos
@@ -53,7 +54,6 @@ def set_super_admin(db: Session, id: int):
 def change_user_admin_status(db: Session, id: int, user_admin_status: user_dtos.UserAdminStatus, request: Request) -> user_dtos.UserResponse:
 
     email = get_email_from_token(request)
-
     requesting_user = get_user_by_email(db, email)
 
     if not requesting_user.is_staff:
@@ -101,6 +101,23 @@ def update_user(db: Session, id: int, request: Request, user_data: user_dtos.Use
     db.refresh(user)
 
     response = user_to_user_response(user)
+
+    return response
+
+
+def get_users(db: Session, request: Request) -> List[user_dtos.UserResponse]:
+
+    response = []
+
+    email = get_email_from_token(request)
+    requesting_user = get_user_by_email(db, email)
+
+    if not requesting_user.is_admin:
+        raise ForbiddenException(requesting_user.email)
+    users = db.query(models.User).all()
+
+    for user in users:
+        response.append(user_to_user_response(user))
 
     return response
 
