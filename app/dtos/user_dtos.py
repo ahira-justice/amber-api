@@ -11,6 +11,7 @@ class UserResponse(BaseModel):
     first_name: str
     last_name: str
     is_admin: bool = False
+    is_staff: bool = False
 
 
 class UserAdminStatus(BaseModel):

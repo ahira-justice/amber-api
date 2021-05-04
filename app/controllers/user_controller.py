@@ -69,6 +69,36 @@ async def token(
     return token
 
 
+@controller.get(
+    path="/{id}",
+    dependencies=[Depends(BearerAuth())],
+    responses={
+        200: {
+            "model": user_dtos.UserResponse
+        },
+        400: {
+            "model": error.ErrorResponse
+        },
+        404: {
+            "model": error.ErrorResponse
+        },
+        422: {
+            "model": error.ValidationErrorResponse
+        }
+    }
+)
+async def get(
+    id: int,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Get user"""
+
+    user = user_service.get_user(db, id, request)
+
+    return user
+
+
 @controller.put(
     path="/{id}",
     dependencies=[Depends(BearerAuth())],

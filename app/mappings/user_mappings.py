@@ -9,7 +9,8 @@ def user_to_user_response(user: models.User) -> user_dtos.UserResponse:
         email=user.email,
         first_name=user.fname,
         last_name=user.lname,
-        is_admin=user.is_admin
+        is_admin=user.is_admin,
+        is_staff=user.is_staff
     )
 
     return result
