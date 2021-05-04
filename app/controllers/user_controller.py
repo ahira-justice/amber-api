@@ -48,7 +48,7 @@ async def register(
         200: {
             "model": user_dtos.Token
         },
-        400: {
+        401: {
             "model": error.ErrorResponse
         },
         422: {
@@ -77,14 +77,11 @@ async def token(
         200: {
             "model": List[user_dtos.UserResponse]
         },
-        400: {
+        401: {
             "model": error.ErrorResponse
         },
-        404: {
+        403: {
             "model": error.ErrorResponse
-        },
-        422: {
-            "model": error.ValidationErrorResponse
         }
     }
 )
@@ -105,14 +102,14 @@ async def get_all(
         200: {
             "model": user_dtos.UserResponse
         },
-        400: {
+        401: {
+            "model": error.ErrorResponse
+        },
+        403: {
             "model": error.ErrorResponse
         },
         404: {
             "model": error.ErrorResponse
-        },
-        422: {
-            "model": error.ValidationErrorResponse
         }
     }
 )
@@ -135,6 +132,9 @@ async def get(
             "model": user_dtos.UserResponse
         },
         400: {
+            "model": error.ErrorResponse
+        },
+        401: {
             "model": error.ErrorResponse
         },
         404: {
@@ -170,6 +170,9 @@ async def update(
             "model": user_dtos.UserResponse
         },
         400: {
+            "model": error.ErrorResponse
+        },
+        401: {
             "model": error.ErrorResponse
         },
         404: {
