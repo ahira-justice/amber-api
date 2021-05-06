@@ -4,10 +4,13 @@ from sqlalchemy.orm.session import Session
 from typing import List
 
 from app.data import models
+from app.domain.config import *
+from app.domain.constants import *
 from app.dtos import user_dtos
 from app.commonhelper import utils
 from app.exceptions.app_exceptions import BadRequestException, ForbiddenException, NotFoundException
 from app.mappings.user_mappings import *
+from app.services import email_service
 from app.services import jwt_service
 
 
@@ -149,6 +152,25 @@ def get_user(db: Session, id: int, request: Request) -> user_dtos.UserResponse:
         raise ForbiddenException(requesting_user.email)
 
     return user
+
+
+def forgot_password(db: Session, user: user_dtos.UserResponse):
+
+    password_reset = models.PasswordReset(
+        reset_code=utils.generate_reset_code(),
+        expiry=RESET_CODE_EXPIRE_MINUTES
+    )
+    password_reset.user = user
+
+    db.add(password_reset)
+    db.commit()
+    db.refresh(password_reset)
+
+    payload = {
+        "reset_code": password_reset.reset_code
+    }
+
+    email_service.send_email(user.email, FORGOT_PASSWORD_TEMPLATE, payload)
 
 
 def get_user_by_email(db: Session, email: EmailStr) -> user_dtos.UserResponse:

@@ -124,6 +124,10 @@ class ExternalLogin(BaseModel):
         return first_name
 
 
+class ResetPassword(BaseModel):
+    email: EmailStr
+
+
 class Password(BaseModel):
     password_hash: bytes
     password_salt: bytes
