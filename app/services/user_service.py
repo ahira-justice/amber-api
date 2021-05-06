@@ -39,7 +39,7 @@ def seed_user(db: Session, email: EmailStr, first_name: str, last_name: str, pas
 
 def set_super_admin(db: Session, id: int):
 
-    user = get_user_by_id(db, id)
+    user = db.query(models.User).filter(models.User.id == id).first()
     user.is_admin = True
     user.is_staff = True
 
