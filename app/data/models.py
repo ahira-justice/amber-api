@@ -1,4 +1,5 @@
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, LargeBinary
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, LargeBinary
+from sqlalchemy.orm import relationship
 
 from datetime import datetime
 
@@ -26,3 +27,14 @@ class User(BaseEntity):
     password_salt = Column(LargeBinary, nullable=True)
     is_admin = Column(Boolean, nullable=False, default=False)
     is_staff = Column(Boolean, nullable=False, default=False)
+    passwordresets = relationship("PasswordReset", back_populates="user", cascade="all, delete-orphan")
+
+
+class PasswordReset(BaseEntity):
+
+    __tablename__ = "passwordresets"
+
+    reset_code = Column(Integer, nullable=False, index=True)
+    expiry = Column(Integer, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="passwordresets")
