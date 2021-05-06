@@ -9,6 +9,7 @@ from app.auth.bearer import BearerAuth
 from app.dtos import user_dtos
 from app.dtos import error
 from app.exceptions.app_exceptions import NotFoundException, UnauthorizedRequestException
+from app.mappings.user_mappings import *
 from app.services import auth_service, jwt_service, user_service
 
 
@@ -43,7 +44,7 @@ async def register(
 
 
 @controller.post(
-    path="/token",
+    path="/login",
     responses={
         200: {
             "model": user_dtos.Token
@@ -56,7 +57,7 @@ async def register(
         }
     }
 )
-async def token(
+async def login(
     login_data: user_dtos.Login,
     db: Session = Depends(get_db)
 ):
@@ -65,7 +66,36 @@ async def token(
     if not auth_service.authenticate_user(db, login_data.email, login_data.password):
         raise UnauthorizedRequestException("Incorrect email or password")
 
-    token = jwt_service.create_access_token(login_data)
+    create_token_data = login_to_create_token(login_data)
+    token = jwt_service.create_access_token(create_token_data)
+
+    return token
+
+
+@controller.post(
+    path="/externallogin",
+    responses={
+        200: {
+            "model": user_dtos.Token
+        },
+        422: {
+            "model": error.ValidationErrorResponse
+        }
+    }
+)
+async def external_login(
+    external_login_data: user_dtos.ExternalLogin,
+    db: Session = Depends(get_db)
+):
+    """Generate access token for valid credentials for social login"""
+
+    user = user_service.get_user_by_email(db, external_login_data.email)
+
+    if not user:
+        user_service.create_social_user(db, external_login_data)
+
+    create_token_data = external_login_to_create_token(external_login_data)
+    token = jwt_service.create_access_token(create_token_data)
 
     return token
 

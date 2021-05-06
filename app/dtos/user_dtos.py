@@ -90,6 +90,40 @@ class Login(BaseModel):
     expires: Optional[int] = ACCESS_TOKEN_EXPIRE_MINUTES
 
 
+class CreateToken(BaseModel):
+    email: EmailStr
+    expires: Optional[int] = ACCESS_TOKEN_EXPIRE_MINUTES
+
+
+class ExternalLogin(BaseModel):
+    email: EmailStr
+    first_name: str
+    last_name: str
+    expires: Optional[int] = ACCESS_TOKEN_EXPIRE_MINUTES
+
+    @validator("email")
+    def email_is_not_null(cls, email):
+
+        if not user_validator.is_not_null(email):
+            raise ValueError("User email cannot be null")
+
+        return email
+
+    @validator("last_name")
+    def last_name_is_not_null(cls, last_name):
+        if not user_validator.is_not_null(last_name):
+            raise ValueError("User last_name cannot be null")
+
+        return last_name
+
+    @validator("first_name")
+    def first_name_is_not_null(cls, first_name):
+        if not user_validator.is_not_null(first_name):
+            raise ValueError("User first_name cannot be null")
+
+        return first_name
+
+
 class Password(BaseModel):
     password_hash: bytes
     password_salt: bytes

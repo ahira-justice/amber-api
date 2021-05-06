@@ -24,6 +24,19 @@ def create_user(db: Session, user_data: user_dtos.UserCreate) -> user_dtos.UserR
     return response
 
 
+def create_social_user(db: Session, external_login_data: user_dtos.ExternalLogin) -> user_dtos.UserResponse:
+
+    user = external_login_to_user(external_login_data)
+
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    response = user_to_user_response(user)
+
+    return response
+
+
 def seed_user(db: Session, email: EmailStr, first_name: str, last_name: str, password: str) -> user_dtos.UserResponse:
 
     payload = user_dtos.UserCreate(

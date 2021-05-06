@@ -7,11 +7,11 @@ from app.domain.config import *
 from app.dtos import user_dtos
 
 
-def create_access_token(login_data: user_dtos.Login) -> user_dtos.Token:
-    data = {"sub": login_data.email}
+def create_access_token(create_token_data: user_dtos.CreateToken) -> user_dtos.Token:
+    data = {"sub": create_token_data.email}
 
-    if login_data.expires:
-        expire = datetime.utcnow() + timedelta(minutes=login_data.expires)
+    if create_token_data.expires:
+        expire = datetime.utcnow() + timedelta(minutes=create_token_data.expires)
     else:
         expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
