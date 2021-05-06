@@ -28,6 +28,7 @@ class User(BaseEntity):
     is_admin = Column(Boolean, nullable=False, default=False)
     is_staff = Column(Boolean, nullable=False, default=False)
     passwordresets = relationship("PasswordReset", back_populates="user", cascade="all, delete-orphan")
+    games = relationship("Game", back_populates="user", cascade="all, delete-orphan")
 
 
 class PasswordReset(BaseEntity):
@@ -38,3 +39,12 @@ class PasswordReset(BaseEntity):
     expiry = Column(Integer, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="passwordresets")
+
+
+class Game(BaseEntity):
+
+    __tablename__ = "games"
+
+    score = Column(Integer, nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="games")
