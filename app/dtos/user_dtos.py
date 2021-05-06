@@ -124,8 +124,13 @@ class ExternalLogin(BaseModel):
         return first_name
 
 
-class ResetPassword(BaseModel):
+class ForgotPassword(BaseModel):
     email: EmailStr
+
+
+class ResetPassword(BaseModel):
+    password: str
+    reset_code: str
 
 
 class Password(BaseModel):

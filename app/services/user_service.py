@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from fastapi import Request
 from pydantic import EmailStr
 from sqlalchemy.orm.session import Session
@@ -154,7 +155,7 @@ def get_user(db: Session, id: int, request: Request) -> user_dtos.UserResponse:
     return user
 
 
-def forgot_password(db: Session, user: user_dtos.UserResponse):
+def forgot_password(db: Session, user: user_dtos.UserResponse) -> None:
 
     password_reset = models.PasswordReset(
         reset_code=utils.generate_reset_code(),
@@ -171,6 +172,31 @@ def forgot_password(db: Session, user: user_dtos.UserResponse):
     }
 
     email_service.send_email(user.email, FORGOT_PASSWORD_TEMPLATE, payload)
+
+
+def reset_password(db: Session, reset_password_data: user_dtos.ResetPassword) -> user_dtos.UserResponse:
+
+    password_reset = get_password_reset_by_reset_code(db, reset_password_data.reset_code)
+
+    if not password_reset:
+        raise NotFoundException(message="Invalid reset code")
+
+    expiry = password_reset.created_on + timedelta(minutes=password_reset.expiry)
+    if datetime.utcnow() > expiry:
+        raise BadRequestException("Reset code has expired, please try again")
+
+    password_hash, password_salt = utils.generate_hash_and_salt(reset_password_data.password)
+
+    user = password_reset.user
+    user.password_hash = password_hash
+    user.password_salt = password_salt
+
+    db.commit()
+    db.refresh(user)
+
+    response = user_to_user_response(user)
+
+    return response
 
 
 def get_user_by_email(db: Session, email: EmailStr) -> user_dtos.UserResponse:
@@ -204,3 +230,8 @@ def get_email_from_token(request: Request) -> EmailStr:
     email = payload.get("sub")
 
     return email
+
+
+def get_password_reset_by_reset_code(db: Session, reset_code: str) -> models.PasswordReset:
+    password_reset = db.query(models.PasswordReset).filter(models.PasswordReset.reset_code == reset_code).first()
+    return password_reset

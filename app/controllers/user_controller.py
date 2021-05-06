@@ -117,16 +117,40 @@ async def external_login(
     }
 )
 async def forgot_password(
-    reset_password_data: user_dtos.ResetPassword,
+    forgot_password_data: user_dtos.ForgotPassword,
     db: Session = Depends(get_db)
 ):
     """Generate password reset link"""
-    user = user_service.get_user_by_email(db, reset_password_data.email)
+    user = user_service.get_user_by_email(db, forgot_password_data.email)
 
     if not user:
-        raise NotFoundException(message=f"User with email: {reset_password_data.email} does not exist")
+        raise NotFoundException(message=f"User with email: {forgot_password_data.email} does not exist")
 
     user_service.forgot_password(db, user)
+
+
+@controller.post(
+    path="/resetpassword",
+    status_code=200,
+    responses={
+        200: {
+            "model": user_dtos.UserResponse
+        },
+        404: {
+            "model": error.ErrorResponse
+        },
+        422: {
+            "model": error.ValidationErrorResponse
+        }
+    }
+)
+async def reset_password(
+    reset_password_data: user_dtos.ResetPassword,
+    db: Session = Depends(get_db)
+):
+    """Reset user password"""
+    user = user_service.reset_password(db, reset_password_data)
+    return user
 
 
 @controller.get(
