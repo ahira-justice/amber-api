@@ -21,6 +21,7 @@ controller = APIRouter(
 
 @controller.post(
     path="",
+    status_code=200,
     responses={
         200: {
             "model": user_dtos.UserResponse
@@ -45,6 +46,7 @@ async def register(
 
 @controller.post(
     path="/login",
+    status_code=200,
     responses={
         200: {
             "model": user_dtos.Token
@@ -74,6 +76,7 @@ async def login(
 
 @controller.post(
     path="/externallogin",
+    status_code=200,
     responses={
         200: {
             "model": user_dtos.Token
@@ -102,6 +105,7 @@ async def external_login(
 
 @controller.post(
     path="/forgotpassword",
+    status_code=204,
     responses={
         204: {},
         404: {
@@ -128,6 +132,7 @@ async def forgot_password(
 @controller.get(
     path="",
     dependencies=[Depends(BearerAuth())],
+    status_code=200,
     responses={
         200: {
             "model": List[user_dtos.UserResponse]
@@ -153,6 +158,7 @@ async def get_all(
 @controller.get(
     path="/{id}",
     dependencies=[Depends(BearerAuth())],
+    status_code=200,
     responses={
         200: {
             "model": user_dtos.UserResponse
@@ -182,6 +188,7 @@ async def get(
 @controller.put(
     path="/{id}",
     dependencies=[Depends(BearerAuth())],
+    status_code=200,
     responses={
         200: {
             "model": user_dtos.UserResponse
@@ -220,6 +227,7 @@ async def update(
 @controller.put(
     path="/{id}/adminstatus",
     dependencies=[Depends(BearerAuth())],
+    status_code=200,
     responses={
         200: {
             "model": user_dtos.UserResponse
