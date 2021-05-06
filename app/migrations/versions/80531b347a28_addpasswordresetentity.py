@@ -23,7 +23,7 @@ def upgrade():
     sa.Column('created_on', sa.DateTime(), nullable=False),
     sa.Column('updated_on', sa.DateTime(), nullable=True),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
-    sa.Column('reset_code', sa.Integer(), nullable=False),
+    sa.Column('reset_code', sa.String(), nullable=False),
     sa.Column('expiry', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),

@@ -34,7 +34,7 @@ class PasswordReset(BaseEntity):
 
     __tablename__ = "passwordresets"
 
-    reset_code = Column(Integer, nullable=False, index=True)
+    reset_code = Column(String, nullable=False, index=True)
     expiry = Column(Integer, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="passwordresets")
