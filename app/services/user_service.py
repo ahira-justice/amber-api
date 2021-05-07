@@ -156,7 +156,7 @@ def forgot_password(db: Session, user: user_dtos.UserResponse) -> None:
         reset_code=utils.generate_reset_code(),
         expiry=RESET_CODE_EXPIRE_MINUTES
     )
-    password_reset.user = user
+    password_reset.user_id = user.id
 
     db.add(password_reset)
     db.commit()
