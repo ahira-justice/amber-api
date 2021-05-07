@@ -63,3 +63,33 @@ async def get_all(
 
     games = game_service.get_games(db, request)
     return games
+
+
+@controller.get(
+    path="/{id}",
+    dependencies=[Depends(BearerAuth())],
+    status_code=200,
+    responses={
+        200: {
+            "model": game_dtos.GameResponse
+        },
+        401: {
+            "model": error.ErrorResponse
+        },
+        403: {
+            "model": error.ErrorResponse
+        },
+        404: {
+            "model": error.ErrorResponse
+        }
+    }
+)
+async def get(
+    id: int,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Get game"""
+
+    game = game_service.get_game(db, id, request)
+    return game
