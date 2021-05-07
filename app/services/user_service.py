@@ -69,10 +69,10 @@ def set_super_admin(db: Session, id: int):
 
 def change_user_admin_status(db: Session, id: int, user_admin_status: user_dtos.UserAdminStatus, request: Request) -> user_dtos.UserResponse:
 
-    requesting_user = get_current_user(db, request)
+    current_user = get_current_user(db, request)
 
-    if not requesting_user.is_staff:
-        raise ForbiddenException(requesting_user.email)
+    if not current_user.is_staff:
+        raise ForbiddenException(current_user.email)
 
     user = get_user_by_id(db, id)
 
@@ -124,10 +124,11 @@ def get_users(db: Session, request: Request) -> List[user_dtos.UserResponse]:
 
     response = []
 
-    requesting_user = get_current_user(db, request)
+    current_user = get_current_user(db, request)
 
-    if not requesting_user.is_admin:
-        raise ForbiddenException(requesting_user.email)
+    if not current_user.is_admin:
+        raise ForbiddenException(current_user.email)
+
     users = db.query(models.User).all()
 
     for user in users:
@@ -138,14 +139,14 @@ def get_users(db: Session, request: Request) -> List[user_dtos.UserResponse]:
 
 def get_user(db: Session, id: int, request: Request) -> user_dtos.UserResponse:
 
-    requesting_user = get_current_user(db, request)
+    current_user = get_current_user(db, request)
     user = get_user_by_id(db, id)
 
     if not user:
         raise NotFoundException(f"User with id: {id} does not exist")
 
-    if not requesting_user.is_admin and requesting_user.email != user.email:
-        raise ForbiddenException(requesting_user.email)
+    if not current_user.is_admin and current_user.email != user.email:
+        raise ForbiddenException(current_user.email)
 
     return user
 
