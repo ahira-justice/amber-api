@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm.session import Session
+from typing import List
 
 from app.auth.bearer import BearerAuth
 from app.domain.constants import *
@@ -39,3 +40,29 @@ async def create(
 
     new_game = game_service.create_game(db, request, game_data)
     return new_game
+
+
+@controller.get(
+    path="",
+    dependencies=[Depends(BearerAuth())],
+    status_code=200,
+    responses={
+        200: {
+            "model": List[game_dtos.GameResponse]
+        },
+        401: {
+            "model": error.ErrorResponse
+        },
+        403: {
+            "model": error.ErrorResponse
+        }
+    }
+)
+async def get_all(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Get games"""
+
+    games = game_service.get_games(db, request)
+    return games

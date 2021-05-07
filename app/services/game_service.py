@@ -22,7 +22,20 @@ def create_game(db: Session, request: Request, game_data: game_dtos.GameCreate) 
 
 
 def get_games(db: Session, request: Request) -> List[game_dtos.GameResponse]:
-    pass
+
+    response = []
+
+    current_user = user_service.get_current_user(db, request)
+
+    games = db.query(models.Game).filter(models.Game.user_id == current_user.id).all()
+
+    if current_user.is_admin:
+        games = db.query(models.Game).all()
+
+    for game in games:
+        response.append(game_to_game_response(game))
+
+    return response
 
 
 def get_game(db: Session, id: int, request: Request):
