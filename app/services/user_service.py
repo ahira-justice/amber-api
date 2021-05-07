@@ -11,8 +11,7 @@ from app.dtos import user_dtos
 from app.commonhelper import utils
 from app.exceptions.app_exceptions import BadRequestException, ForbiddenException, NotFoundException
 from app.mappings.user_mappings import *
-from app.services import email_service
-from app.services import jwt_service
+from app.services import email_service, jwt_service
 
 
 def create_user(db: Session, user_data: user_dtos.UserCreate) -> user_dtos.UserResponse:
@@ -70,8 +69,7 @@ def set_super_admin(db: Session, id: int):
 
 def change_user_admin_status(db: Session, id: int, user_admin_status: user_dtos.UserAdminStatus, request: Request) -> user_dtos.UserResponse:
 
-    email = get_email_from_token(request)
-    requesting_user = get_user_by_email(db, email)
+    requesting_user = get_current_user(db, request)
 
     if not requesting_user.is_staff:
         raise ForbiddenException(requesting_user.email)
@@ -126,8 +124,7 @@ def get_users(db: Session, request: Request) -> List[user_dtos.UserResponse]:
 
     response = []
 
-    email = get_email_from_token(request)
-    requesting_user = get_user_by_email(db, email)
+    requesting_user = get_current_user(db, request)
 
     if not requesting_user.is_admin:
         raise ForbiddenException(requesting_user.email)
@@ -141,9 +138,7 @@ def get_users(db: Session, request: Request) -> List[user_dtos.UserResponse]:
 
 def get_user(db: Session, id: int, request: Request) -> user_dtos.UserResponse:
 
-    email = get_email_from_token(request)
-
-    requesting_user = get_user_by_email(db, email)
+    requesting_user = get_current_user(db, request)
     user = get_user_by_id(db, id)
 
     if not user:
@@ -197,6 +192,14 @@ def reset_password(db: Session, reset_password_data: user_dtos.ResetPassword) ->
     response = user_to_user_response(user)
 
     return response
+
+
+def get_current_user(db: Session, request: Request) -> user_dtos.UserResponse:
+
+    email = get_email_from_token(request)
+    user = get_user_by_email(db, email)
+
+    return user
 
 
 def get_user_by_email(db: Session, email: EmailStr) -> user_dtos.UserResponse:
