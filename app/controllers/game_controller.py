@@ -52,9 +52,6 @@ async def create(
         },
         401: {
             "model": error.ErrorResponse
-        },
-        403: {
-            "model": error.ErrorResponse
         }
     }
 )
