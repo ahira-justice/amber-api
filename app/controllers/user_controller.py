@@ -26,9 +26,6 @@ controller = APIRouter(
         200: {
             "model": user_dtos.UserResponse
         },
-        400: {
-            "model": error.ErrorResponse
-        },
         422: {
             "model": error.ValidationErrorResponse
         }
@@ -173,7 +170,7 @@ async def get_all(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    """Get user"""
+    """Get users"""
 
     users = user_service.get_users(db, request)
     return users

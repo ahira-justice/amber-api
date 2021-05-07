@@ -22,7 +22,7 @@ controller = APIRouter(
         200: {
             "model": game_dtos.GameResponse
         },
-        400: {
+        401: {
             "model": error.ErrorResponse
         },
         422: {
