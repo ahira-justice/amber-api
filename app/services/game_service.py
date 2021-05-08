@@ -1,4 +1,6 @@
+from datetime import datetime, timedelta
 from fastapi import Request
+from sqlalchemy import desc
 from sqlalchemy.orm.session import Session
 from typing import List
 
@@ -51,6 +53,23 @@ def get_game(db: Session, id: int, request: Request) -> game_dtos.GameResponse:
         raise ForbiddenException(current_user.email)
 
     return game
+
+
+def get_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
+
+    response = []
+    today = datetime.today().date()
+    weekstart = today + timedelta(days=-today.weekday())
+
+    games = db.query(models.Game)
+
+    games = games.filter(models.Game.created_on >= weekstart)
+    games = games.order_by(desc(models.Game.score),models.Game.created_on).all()
+
+    for game in games:
+        response.append(game_to_game_response(game))
+
+    return response
 
 
 def get_game_by_id(db: Session, id: int) -> game_dtos.GameResponse:

@@ -66,6 +66,28 @@ async def get_all(
 
 
 @controller.get(
+    path="/leaderboard",
+    dependencies=[Depends(BearerAuth())],
+    status_code=200,
+    responses={
+        200: {
+            "model": List[game_dtos.GameResponse]
+        },
+        401: {
+            "model": error.ErrorResponse
+        }
+    }
+)
+async def leaderboard(
+    db: Session = Depends(get_db)
+):
+    """Get weekly leaderboard"""
+
+    leaderboard = game_service.get_leaderboard(db)
+    return leaderboard
+
+
+@controller.get(
     path="/{id}",
     dependencies=[Depends(BearerAuth())],
     status_code=200,
