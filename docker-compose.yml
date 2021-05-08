@@ -1,7 +1,7 @@
 version: "3.4"
 
 services:
-  update-service:
+  amberapi:
     container_name: amberapi
     image: ${DOCKER_REGISTRY-}amberapi:latest
     build:
