@@ -66,7 +66,7 @@ async def get_all(
 
 
 @controller.get(
-    path="/leaderboard",
+    path="/weeklyleaderboard",
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
@@ -83,8 +83,30 @@ async def leaderboard(
 ):
     """Get weekly leaderboard"""
 
-    leaderboard = game_service.get_leaderboard(db)
+    leaderboard = game_service.get_weekly_leaderboard(db)
     return leaderboard
+
+
+@controller.get(
+    path="/alltimeleaderboard",
+    dependencies=[Depends(BearerAuth())],
+    status_code=200,
+    responses={
+        200: {
+            "model": List[game_dtos.GameResponse]
+        },
+        401: {
+            "model": error.ErrorResponse
+        }
+    }
+)
+async def all_time_leaderboard(
+    db: Session = Depends(get_db)
+):
+    """Get all-time leaderboard"""
+
+    all_time_leaderboard = game_service.get_all_time_leaderboard(db)
+    return all_time_leaderboard
 
 
 @controller.get(

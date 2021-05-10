@@ -4,6 +4,7 @@ from sqlalchemy import desc
 from sqlalchemy.orm.session import Session
 from typing import List
 
+from app.domain.config import *
 from app.dtos import game_dtos
 from app.exceptions.app_exceptions import ForbiddenException, NotFoundException
 from app.mappings.game_mappings import *
@@ -55,7 +56,7 @@ def get_game(db: Session, id: int, request: Request) -> game_dtos.GameResponse:
     return game
 
 
-def get_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
+def get_weekly_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
 
     response = []
     today = datetime.today().date()
@@ -64,7 +65,22 @@ def get_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
     games = db.query(models.Game)
 
     games = games.filter(models.Game.created_on >= weekstart)
-    games = games.order_by(desc(models.Game.score),models.Game.created_on).all()
+    games = games.order_by(desc(models.Game.score), models.Game.created_on).all()
+
+    for game in games:
+        response.append(game_to_game_response(game))
+
+    return response
+
+
+def get_all_time_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
+
+    response = []
+
+    games = db.query(models.Game)
+
+    games = games.order_by(desc(models.Game.score), models.Game.created_on)
+    games = games.limit(ALL_TIME_LEADERBOARD_LIMIT).all()
 
     for game in games:
         response.append(game_to_game_response(game))
