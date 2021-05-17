@@ -48,7 +48,7 @@ def get_game(db: Session, id: int, request: Request) -> game_dtos.GameResponse:
     game = get_game_by_id(db, id)
 
     if not game:
-        raise NotFoundException(f"Game with id: {id} does not exist")
+        raise NotFoundException(message=f"Game with id: {id} does not exist")
 
     if not current_user.is_admin and current_user.email != game.email:
         raise ForbiddenException(current_user.email)

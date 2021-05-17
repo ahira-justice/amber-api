@@ -10,9 +10,9 @@ from app.data import models
 from app.dtos import user_dtos
 
 
-def get_user_password(db: Session, email: EmailStr) -> user_dtos.Password:
+def get_user_password(db: Session, username: str) -> user_dtos.Password:
 
-    user = db.query(models.User).filter(models.User.email == email).first()
+    user = db.query(models.User).filter(models.User.username == username).first()
 
     if not user:
         return None
@@ -37,8 +37,8 @@ def verify_password(password, password_hash, password_salt) -> bool:
     return key == password_hash
 
 
-def authenticate_user(db: Session, email: str, password: str) -> bool:
-    user_password = get_user_password(db, email)
+def authenticate_user(db: Session, username: str, password: str) -> bool:
+    user_password = get_user_password(db, username)
 
     if not user_password:
         return False

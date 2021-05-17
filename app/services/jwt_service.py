@@ -8,7 +8,7 @@ from app.dtos import user_dtos
 
 
 def create_access_token(create_token_data: user_dtos.CreateToken) -> user_dtos.Token:
-    data = {"sub": create_token_data.email}
+    data = {"sub": create_token_data.username}
 
     if create_token_data.expires:
         expire = datetime.utcnow() + timedelta(minutes=create_token_data.expires)
@@ -30,10 +30,10 @@ def decode_jwt(token: str) -> dict:
 
     try:
         decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[JWT_SIGNING_ALGORITHM])
-        email = decoded_token.get("sub")
+        username = decoded_token.get("sub")
         expiry = decoded_token.get("exp")
 
-        if not email:
+        if not username:
             return None
 
         if expiry < time.time():

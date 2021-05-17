@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 class AppDomainException(Exception):
@@ -19,13 +19,13 @@ class BadRequestException(AppDomainException):
 
 
 class ForbiddenException(AppDomainException):
-    def __init__(self, email: EmailStr = None):
+    def __init__(self, username: str = None):
         status_code = 403
         code = "Forbidden"
         message = "Unauthorized: user is not allowed to access or change this resource"
 
-        if email:
-            message = f"Unauthorized: {email} is not allowed to access or change this resource"
+        if username:
+            message = f"Unauthorized: {username} is not allowed to access or change this resource"
 
         super().__init__(status_code, code, message)
 

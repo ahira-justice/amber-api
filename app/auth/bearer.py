@@ -4,7 +4,7 @@ from fastapi.security.http import HTTPBearer
 from app.data import models
 from app.domain.database import SessionLocal
 from app.exceptions.app_exceptions import UnauthorizedRequestException
-from app.services import jwt_service
+from app.services import jwt_service, user_service
 
 
 class BearerAuth(HTTPBearer):
@@ -38,8 +38,8 @@ class BearerAuth(HTTPBearer):
         if not payload:
             return False
 
-        email = payload.get("sub")
-        user = db.query(models.User).filter(models.User.email == email).first()
+        username = payload.get("sub")
+        user = user_service.get_user_by_username(db, username)
 
         if not user:
             return False

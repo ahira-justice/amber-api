@@ -62,8 +62,8 @@ async def login(
 ):
     """Generate access token for valid credentials"""
 
-    if not auth_service.authenticate_user(db, login_data.email, login_data.password):
-        raise UnauthorizedRequestException("Incorrect email or password")
+    if not auth_service.authenticate_user(db, login_data.username, login_data.password):
+        raise UnauthorizedRequestException("Incorrect username or password")
 
     create_token_data = login_to_create_token(login_data)
     token = jwt_service.create_access_token(create_token_data)
@@ -89,7 +89,9 @@ async def external_login(
 ):
     """Generate access token for valid credentials for social login"""
 
-    user = user_service.get_user_by_email(db, external_login_data.email)
+    username = external_login_data.email if external_login_data.email else external_login_data.phone_number
+
+    user = user_service.get_user_by_username(db, username)
 
     if not user:
         user_service.create_social_user(db, external_login_data)
@@ -118,7 +120,7 @@ async def forgot_password(
     db: Session = Depends(get_db)
 ):
     """Generate password reset link"""
-    user = user_service.get_user_by_email(db, forgot_password_data.email)
+    user = user_service.get_user_by_username(db, forgot_password_data.email)
 
     if not user:
         raise NotFoundException(message=f"User with email: {forgot_password_data.email} does not exist")
@@ -242,7 +244,7 @@ async def update(
     user = user_service.get_user_by_id(db, id)
 
     if not user:
-        raise NotFoundException(f"User with id: {id} does not exist")
+        raise NotFoundException(message=f"User with id: {id} does not exist")
 
     updated_user = user_service.update_user(db, id, request, user_data)
     return updated_user

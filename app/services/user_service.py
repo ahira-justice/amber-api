@@ -91,7 +91,7 @@ def change_user_admin_status(db: Session, id: int, user_admin_status: user_dtos.
 
 def update_user(db: Session, id: int, request: Request, user_data: user_dtos.UserUpdate) -> user_dtos.UserResponse:
 
-    email = get_email_from_token(request)
+    username = get_username_from_token(request)
 
     password_hash, password_salt = utils.generate_hash_and_salt(user_data.password)
 
@@ -100,12 +100,15 @@ def update_user(db: Session, id: int, request: Request, user_data: user_dtos.Use
     if user.is_staff:
         raise BadRequestException("Cannot modify super admin user")
 
-    if user.email != email:
-        raise ForbiddenException(email)
+    if user.username != username:
+        raise ForbiddenException(username)
 
-    if get_user_by_email(db, user_data.email) and user.email != user_data.email:
-        raise BadRequestException(f"Cannot update email to '{user_data.email}'. User with email: '{user_data.email}' already exists")
+    user_data_username = user_data.email if user_data.email else user_data.phone_number
 
+    if get_user_by_username(db, user_data_username) and user.username != user_data_username:
+        raise BadRequestException(f"Cannot update username to '{user_data_username}'. User with username: '{user_data_username}' already exists")
+
+    user.username = user_data_username
     user.email = user_data.email
     user.fname = user_data.first_name
     user.lname = user_data.last_name
@@ -127,7 +130,7 @@ def get_users(db: Session, request: Request) -> List[user_dtos.UserResponse]:
     current_user = get_current_user(db, request)
 
     if not current_user.is_admin:
-        raise ForbiddenException(current_user.email)
+        raise ForbiddenException(current_user.username)
 
     users = db.query(models.User).all()
 
@@ -143,9 +146,9 @@ def get_user(db: Session, id: int, request: Request) -> user_dtos.UserResponse:
     user = get_user_by_id(db, id)
 
     if not user:
-        raise NotFoundException(f"User with id: {id} does not exist")
+        raise NotFoundException(message=f"User with id: {id} does not exist")
 
-    if not current_user.is_admin and current_user.email != user.email:
+    if not current_user.is_admin and current_user.username != user.username:
         raise ForbiddenException(current_user.email)
 
     return user
@@ -175,7 +178,7 @@ def reset_password(db: Session, reset_password_data: user_dtos.ResetPassword) ->
     password_reset = get_password_reset_by_reset_code(db, reset_password_data.reset_code)
 
     if not password_reset:
-        raise NotFoundException(message="Invalid reset code")
+        raise BadRequestException("Invalid reset code")
 
     expiry = password_reset.created_on + timedelta(minutes=password_reset.expiry)
     if datetime.utcnow() > expiry:
@@ -197,15 +200,15 @@ def reset_password(db: Session, reset_password_data: user_dtos.ResetPassword) ->
 
 def get_current_user(db: Session, request: Request) -> user_dtos.UserResponse:
 
-    email = get_email_from_token(request)
-    user = get_user_by_email(db, email)
+    username = get_username_from_token(request)
+    user = get_user_by_username(db, username)
 
     return user
 
 
-def get_user_by_email(db: Session, email: EmailStr) -> user_dtos.UserResponse:
+def get_user_by_username(db: Session, username: str) -> user_dtos.UserResponse:
 
-    user = db.query(models.User).filter(models.User.email == email).first()
+    user = db.query(models.User).filter(models.User.username == username).first()
 
     if not user:
         return None
@@ -227,13 +230,13 @@ def get_user_by_id(db: Session, id: int) -> user_dtos.UserResponse:
     return response
 
 
-def get_email_from_token(request: Request) -> EmailStr:
+def get_username_from_token(request: Request) -> EmailStr:
 
     token = request.headers.get("Authorization").split(" ")[1]
     payload = jwt_service.decode_jwt(token)
-    email = payload.get("sub")
+    username = payload.get("sub")
 
-    return email
+    return username
 
 
 def get_password_reset_by_reset_code(db: Session, reset_code: str) -> models.PasswordReset:
