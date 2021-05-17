@@ -1,10 +1,10 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 class GameResponse(BaseModel):
     id: int
     score: int
-    email: EmailStr
+    username: str
     first_name: str
     last_name: str
 

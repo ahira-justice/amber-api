@@ -7,7 +7,7 @@ def game_to_game_response(game: models.Game) -> game_dtos.GameResponse:
     result = game_dtos.GameResponse(
         id=game.id,
         score=game.score,
-        email=game.user.email,
+        username=game.user.username,
         first_name=game.user.fname,
         last_name=game.user.lname
     )
