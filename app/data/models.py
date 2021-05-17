@@ -22,7 +22,9 @@ class User(BaseEntity):
 
     lname = Column(String, nullable=False)
     fname = Column(String, nullable=False)
-    email = Column(String, unique=True, nullable=False, index=True)
+    username = Column(String, nullable=False, index=True)
+    email = Column(String, unique=True, nullable=True, index=True)
+    phone_number = Column(String, nullable=True, index=True)
     password_hash = Column(LargeBinary, nullable=True)
     password_salt = Column(LargeBinary, nullable=True)
     is_admin = Column(Boolean, nullable=False, default=False)
