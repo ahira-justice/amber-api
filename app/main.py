@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 from fastapi.exceptions import RequestValidationError
 
@@ -10,6 +10,7 @@ from app.data.migrations_manager import migrate_database
 from app.exceptions.app_exceptions import AppDomainException
 from app.exceptions.handlers import exception_handler, app_exception_handler, validation_exception_handler
 from app.logger.custom_logger import logger
+from app.middleware.handlers import http_logging_middleware
 
 
 app = FastAPI(
@@ -24,18 +25,23 @@ migrate_database(MIGRATIONS_DIR, ALEMBIC_INI_DIR, SQLALCHEMY_DATABASE_URL)
 
 
 @app.exception_handler(RequestValidationError)
-async def custom_validation_exception_handler(request, e):
+async def custom_validation_exception_handler(request: Request, e: RequestValidationError):
     return await validation_exception_handler(request, e)
 
 
 @app.exception_handler(AppDomainException)
-async def custom_app_exception_handler(request, e):
+async def custom_app_exception_handler(request: Request, e: AppDomainException):
     return await app_exception_handler(request, e)
 
 
 @app.exception_handler(Exception)
-async def custom_app_exception_handler(request, e):
+async def custom_exception_handler(request: Request, e: Exception):
     return await exception_handler(request, e)
+
+
+@app.middleware("http")
+async def custom_http_logging_middleware(request: Request, call_next):
+    return await http_logging_middleware(request, call_next)
 
 
 app.include_router(user_controller)
