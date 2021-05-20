@@ -2,8 +2,8 @@ from app.domain.database import SessionLocal
 from app.data import models
 
 
-def is_not_null(email) -> bool:
-    if email:
+def is_not_null(value) -> bool:
+    if value:
         return True
 
     return False

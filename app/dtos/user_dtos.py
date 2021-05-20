@@ -46,7 +46,7 @@ class UserCreate(BaseModel):
     def last_name_is_not_null(cls, last_name):
 
         if not user_validator.is_not_null(last_name):
-            raise ValueError("User last_name cannot be null")
+            raise ValueError("User last name cannot be null")
 
         return last_name
 
@@ -54,10 +54,17 @@ class UserCreate(BaseModel):
     def first_name_is_not_null(cls, first_name):
 
         if not user_validator.is_not_null(first_name):
-            raise ValueError("User first_name cannot be null")
+            raise ValueError("User first name cannot be null")
 
         return first_name
 
+    @validator("password")
+    def password_is_not_null(cls, password):
+
+        if not user_validator.is_not_null(password):
+            raise ValueError("User password cannot be null")
+
+        return password
 
 class UserUpdate(BaseModel):
     email: EmailStr
@@ -86,7 +93,7 @@ class UserUpdate(BaseModel):
     def last_name_is_not_null(cls, last_name):
 
         if not user_validator.is_not_null(last_name):
-            raise ValueError("User last_name cannot be null")
+            raise ValueError("User last name cannot be null")
 
         return last_name
 
@@ -94,7 +101,7 @@ class UserUpdate(BaseModel):
     def first_name_is_not_null(cls, first_name):
 
         if not user_validator.is_not_null(first_name):
-            raise ValueError("User first_name cannot be null")
+            raise ValueError("User first name cannot be null")
 
         return first_name
 
@@ -134,7 +141,7 @@ class ExternalLogin(BaseModel):
     def last_name_is_not_null(cls, last_name):
 
         if not user_validator.is_not_null(last_name):
-            raise ValueError("User last_name cannot be null")
+            raise ValueError("User last name cannot be null")
 
         return last_name
 
@@ -142,7 +149,7 @@ class ExternalLogin(BaseModel):
     def first_name_is_not_null(cls, first_name):
 
         if not user_validator.is_not_null(first_name):
-            raise ValueError("User first_name cannot be null")
+            raise ValueError("User first name cannot be null")
 
         return first_name
 
