@@ -189,9 +189,6 @@ async def get_all(
         401: {
             "model": error.ErrorResponse
         },
-        403: {
-            "model": error.ErrorResponse
-        },
         422: {
             "model": error.ValidationErrorResponse
         }
