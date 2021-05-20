@@ -8,4 +8,4 @@ class ErrorResponse(BaseModel):
 
 
 class ValidationErrorResponse(ErrorResponse):
-    errors: List[Dict[str, str]]
+    errors: Dict[str, str]
