@@ -179,6 +179,35 @@ async def get_all(
 
 
 @controller.get(
+    path="/me",
+    dependencies=[Depends(BearerAuth())],
+    status_code=200,
+    responses={
+        200: {
+            "model": user_dtos.UserResponse
+        },
+        401: {
+            "model": error.ErrorResponse
+        },
+        403: {
+            "model": error.ErrorResponse
+        },
+        422: {
+            "model": error.ValidationErrorResponse
+        }
+    }
+)
+async def get_current_user(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Get current user"""
+
+    user = user_service.get_current_user(db, request)
+    return user
+
+
+@controller.get(
     path="/{id}",
     dependencies=[Depends(BearerAuth())],
     status_code=200,
@@ -205,7 +234,7 @@ async def get(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    """Get user"""
+    """Get user by id"""
 
     user = user_service.get_user(db, id, request)
     return user
