@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import RedirectResponse
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 
 from app.domain.config import *
 from app.domain.constants import *
@@ -13,6 +14,9 @@ from app.logger.custom_logger import logger
 from app.middleware.handlers import http_logging_middleware
 
 
+migrate_database(MIGRATIONS_DIR, ALEMBIC_INI_DIR, SQLALCHEMY_DATABASE_URL)
+
+
 app = FastAPI(
     title="Amber API",
     version="1.0",
@@ -21,7 +25,12 @@ app = FastAPI(
 )
 
 
-migrate_database(MIGRATIONS_DIR, ALEMBIC_INI_DIR, SQLALCHEMY_DATABASE_URL)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.exception_handler(RequestValidationError)
