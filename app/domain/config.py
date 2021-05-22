@@ -2,10 +2,13 @@ import os
 
 from dotenv import load_dotenv
 
+from app.domain.constants import TEST_DATABASE_URL
+
 
 load_dotenv()
 
 
+ENVIRONMENT = os.environ.get("ENVIRONMENT")
 SQLALCHEMY_DATABASE_URL = os.environ.get("SQLALCHEMY_DATABASE_URL")
 SECRET_KEY = os.environ.get("SECRET_KEY")
 JWT_SIGNING_ALGORITHM = os.environ.get("JWT_SIGNING_ALGORITHM")
@@ -18,3 +21,6 @@ ADMIN_LAST_NAME = os.environ.get("ADMIN_LAST_NAME")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 RESET_CODE_EXPIRE_MINUTES= os.environ.get("RESET_CODE_EXPIRE_MINUTES")
 ALL_TIME_LEADERBOARD_LIMIT= os.environ.get("ALL_TIME_LEADERBOARD_LIMIT")
+
+if ENVIRONMENT == "TEST":
+    SQLALCHEMY_DATABASE_URL = TEST_DATABASE_URL

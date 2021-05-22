@@ -14,7 +14,8 @@ from app.logger.custom_logger import logger
 from app.middleware.handlers import http_logging_middleware
 
 
-migrate_database(MIGRATIONS_DIR, ALEMBIC_INI_DIR, SQLALCHEMY_DATABASE_URL)
+if (ENVIRONMENT != "TEST"):
+    migrate_database(MIGRATIONS_DIR, ALEMBIC_INI_DIR, SQLALCHEMY_DATABASE_URL)
 
 
 app = FastAPI(
