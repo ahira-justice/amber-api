@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, validator, root_validator
 
 from app.domain.config import *
 from app.validators import user_validator
@@ -66,6 +66,7 @@ class UserCreate(BaseModel):
 
         return password
 
+
 class UserUpdate(BaseModel):
     email: EmailStr
     phone_number: str
@@ -124,18 +125,18 @@ class ExternalLogin(BaseModel):
     last_name: str
     expires: Optional[int] = ACCESS_TOKEN_EXPIRE_MINUTES
 
-    @validator("email", "phone_number")
+    @root_validator()
     def email_or_phone_number_is_not_null(cls, values):
+        email = values.get("email")
+        phone_number = values.get("phone_number")
 
-        email, phone_number = values
-
-        if not user_validator.is_not_null(email) or not user_validator.is_not_null(phone_number):
-            raise ValueError("User email or phone number cannot be null")
+        if not user_validator.is_not_null(email) and not user_validator.is_not_null(phone_number):
+            raise ValueError("User email and phone number cannot be null")
 
         if user_validator.is_not_null(email) and user_validator.is_not_null(phone_number):
             raise ValueError("User email and phone number cannot both be set")
 
-        return email or phone_number
+        return values
 
     @validator("last_name")
     def last_name_is_not_null(cls, last_name):
