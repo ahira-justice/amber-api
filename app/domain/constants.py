@@ -6,7 +6,7 @@ OPEN_API_URL = "/swagger/v1/swagger.json"
 USERS_URL = "/api/amberapi/users"
 GAMES_URL = "/api/amberapi/games"
 
-FORGOT_PASSWORD_TEMPLATE=""
+FORGOT_PASSWORD_TEMPLATE = ""
 
 TEST_DATABASE_FILE = "./test.db"
 TEST_DATABASE_URL = f"sqlite:///{TEST_DATABASE_FILE}"
