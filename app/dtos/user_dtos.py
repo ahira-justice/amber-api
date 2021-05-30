@@ -22,6 +22,7 @@ class UserAdminStatus(BaseModel):
 
 class UserCreate(BaseModel):
     email: EmailStr
+    phone_number: str
     first_name: str
     last_name: str
     password: str
@@ -41,6 +42,14 @@ class UserCreate(BaseModel):
             raise ValueError(f"User with email: '{email}' already registered")
 
         return email
+
+    @validator("phone_number")
+    def phone_number_is_not_null(cls, phone_number):
+
+        if not user_validator.is_not_null()(phone_number):
+            raise ValueError("User phone number cannot be null")
+
+        return phone_number
 
     @validator("last_name")
     def last_name_is_not_null(cls, last_name):
