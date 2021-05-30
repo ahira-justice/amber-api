@@ -27,6 +27,8 @@ class User(BaseEntity):
     phone_number = Column(String, nullable=True, index=True)
     password_hash = Column(LargeBinary, nullable=True)
     password_salt = Column(LargeBinary, nullable=True)
+    state = Column(String, nullable=False)
+    avatar = Column(Integer, nullable=True)
     is_admin = Column(Boolean, nullable=False, default=False)
     is_staff = Column(Boolean, nullable=False, default=False)
     passwordresets = relationship("PasswordReset", back_populates="user", cascade="all, delete-orphan")
