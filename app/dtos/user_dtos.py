@@ -12,6 +12,7 @@ class UserResponse(BaseModel):
     phone_number: Optional[str]
     first_name: str
     last_name: str
+    state: str
     is_admin: bool = False
     is_staff: bool = False
 
@@ -25,6 +26,7 @@ class UserCreate(BaseModel):
     phone_number: str
     first_name: str
     last_name: str
+    state: str
     password: str
 
     @validator("email")
@@ -66,6 +68,14 @@ class UserCreate(BaseModel):
             raise ValueError("User first name cannot be null")
 
         return first_name
+
+    @validator("state")
+    def phone_number_is_not_null(cls, state):
+
+        if not user_validator.is_not_null()(state):
+            raise ValueError("User state cannot be null")
+
+        return state
 
     @validator("password")
     def password_is_not_null(cls, password):
