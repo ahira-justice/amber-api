@@ -75,7 +75,7 @@ class UserCreate(BaseModel):
         return first_name
 
     @validator("state")
-    def phone_number_is_not_null(cls, state):
+    def state_is_not_null(cls, state):
 
         if not user_validator.is_not_null()(state):
             raise ValueError("User state cannot be null")
