@@ -89,6 +89,20 @@ def change_user_admin_status(db: Session, id: int, user_admin_status: user_dtos.
     return response
 
 
+def change_user_avatar(db: Session, user_avatar: user_dtos.UserAvatar, request: Request) -> user_dtos.UserResponse:
+
+    user = get_current_user(db, request)
+
+    user.avatar = user_avatar.avatar
+
+    db.commit()
+    db.refresh(user)
+
+    response = user_to_user_response(user)
+
+    return response
+
+
 def update_user(db: Session, id: int, request: Request, user_data: user_dtos.UserUpdate) -> user_dtos.UserResponse:
 
     username = get_username_from_token(request)

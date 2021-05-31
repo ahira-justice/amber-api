@@ -13,6 +13,7 @@ def user_to_user_response(user: models.User) -> user_dtos.UserResponse:
         first_name=user.fname,
         last_name=user.lname,
         state=user.state,
+        avatar=user.avatar,
         is_admin=user.is_admin,
         is_staff=user.is_staff
     )

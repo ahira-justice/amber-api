@@ -204,6 +204,36 @@ async def get_current_user(
     return user
 
 
+@controller.put(
+    path="/avatar",
+    dependencies=[Depends(BearerAuth())],
+    status_code=200,
+    responses={
+        200: {
+            "model": user_dtos.UserResponse
+        },
+        400: {
+            "model": error.ErrorResponse
+        },
+        401: {
+            "model": error.ErrorResponse
+        },
+        422: {
+            "model": error.ValidationErrorResponse
+        }
+    }
+)
+async def set_user_avatar(
+    user_avatar: user_dtos.UserAvatar,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Update user avatar"""
+
+    updated_user = user_service.change_user_avatar(db, user_avatar, request)
+    return updated_user
+
+
 @controller.get(
     path="/{id}",
     dependencies=[Depends(BearerAuth())],
@@ -288,6 +318,9 @@ async def update(
             "model": error.ErrorResponse
         },
         401: {
+            "model": error.ErrorResponse
+        },
+        403: {
             "model": error.ErrorResponse
         },
         404: {

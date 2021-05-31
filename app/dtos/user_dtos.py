@@ -13,12 +13,17 @@ class UserResponse(BaseModel):
     first_name: str
     last_name: str
     state: str
+    avatar: int
     is_admin: bool = False
     is_staff: bool = False
 
 
 class UserAdminStatus(BaseModel):
     is_admin: bool = False
+
+
+class UserAvatar(BaseModel):
+    avatar: int
 
 
 class UserCreate(BaseModel):
