@@ -28,10 +28,10 @@ class UserAvatar(BaseModel):
 
 class UserCreate(BaseModel):
     email: EmailStr
-    phone_number: str
+    phone_number: Optional[str]
     first_name: str
     last_name: str
-    state: str
+    state: Optional[str]
     password: str
 
     @validator("email")
