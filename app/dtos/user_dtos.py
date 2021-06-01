@@ -53,7 +53,7 @@ class UserCreate(BaseModel):
     @validator("phone_number")
     def phone_number_is_not_null(cls, phone_number):
 
-        if not user_validator.is_not_null()(phone_number):
+        if not user_validator.is_not_null(phone_number):
             raise ValueError("User phone number cannot be null")
 
         return phone_number
@@ -77,7 +77,7 @@ class UserCreate(BaseModel):
     @validator("state")
     def state_is_not_null(cls, state):
 
-        if not user_validator.is_not_null()(state):
+        if not user_validator.is_not_null(state):
             raise ValueError("User state cannot be null")
 
         return state
