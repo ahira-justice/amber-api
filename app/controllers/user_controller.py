@@ -212,9 +212,6 @@ async def get_current_user(
         200: {
             "model": user_dtos.UserResponse
         },
-        400: {
-            "model": error.ErrorResponse
-        },
         401: {
             "model": error.ErrorResponse
         },
