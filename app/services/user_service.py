@@ -74,7 +74,7 @@ def change_user_admin_status(db: Session, id: int, user_admin_status: user_dtos.
     if not current_user.is_staff:
         raise ForbiddenException(current_user.email)
 
-    user = get_user_by_id(db, id)
+    user = db.query(models.User).filter(models.User.id == id).first()
 
     if user.is_staff:
         raise BadRequestException("Cannot modify admin status of super admin user")
@@ -91,7 +91,9 @@ def change_user_admin_status(db: Session, id: int, user_admin_status: user_dtos.
 
 def change_user_avatar(db: Session, user_avatar: user_dtos.UserAvatar, request: Request) -> user_dtos.UserResponse:
 
-    user = get_current_user(db, request)
+    current_user = get_current_user(db, request)
+
+    user = db.query(models.User).filter(models.User.id == current_user.id).first()
 
     user.avatar = user_avatar.avatar
 
@@ -109,7 +111,7 @@ def update_user(db: Session, id: int, request: Request, user_data: user_dtos.Use
 
     password_hash, password_salt = utils.generate_hash_and_salt(user_data.password)
 
-    user = get_user_by_id(db, id)
+    user = db.query(models.User).filter(models.User.id == id).first()
 
     if user.is_staff:
         raise BadRequestException("Cannot modify super admin user")
