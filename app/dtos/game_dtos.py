@@ -7,6 +7,7 @@ class GameResponse(BaseModel):
     username: str
     first_name: str
     last_name: str
+    avatar: int
 
 
 class GameCreate(BaseModel):
