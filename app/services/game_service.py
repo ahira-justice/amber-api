@@ -56,6 +56,22 @@ def get_game(db: Session, id: int, request: Request) -> game_dtos.GameResponse:
     return game
 
 
+def get_daily_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
+
+    response = []
+    today = datetime.today().date()
+
+    games = db.query(models.Game)
+
+    games = games.filter(models.Game.created_on >= today)
+    games = games.order_by(desc(models.Game.score), models.Game.created_on).all()
+
+    for game in games:
+        response.append(game_to_game_response(game))
+
+    return response
+
+
 def get_weekly_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
 
     response = []
