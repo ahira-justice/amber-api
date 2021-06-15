@@ -81,7 +81,7 @@ async def get_all(
 async def daily_leaderboard(
     db: Session = Depends(get_db)
 ):
-    """Get weekly leaderboard"""
+    """Get daily leaderboard"""
 
     daily_leaderboard = game_service.get_daily_leaderboard(db)
     return daily_leaderboard
