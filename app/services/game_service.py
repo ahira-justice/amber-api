@@ -1,3 +1,4 @@
+from app.commonhelper import utils
 from datetime import datetime, timedelta
 from fastapi import Request
 from sqlalchemy import desc
@@ -65,6 +66,7 @@ def get_daily_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
 
     games = games.filter(models.Game.created_on >= today)
     games = games.order_by(desc(models.Game.score), models.Game.created_on).all()
+    games = utils.remove_duplicates(games)
 
     for game in games:
         response.append(game_to_game_response(game))
@@ -82,6 +84,7 @@ def get_weekly_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
 
     games = games.filter(models.Game.created_on >= weekstart)
     games = games.order_by(desc(models.Game.score), models.Game.created_on).all()
+    games = utils.remove_duplicates(games)
 
     for game in games:
         response.append(game_to_game_response(game))
@@ -95,8 +98,9 @@ def get_all_time_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
 
     games = db.query(models.Game)
 
-    games = games.order_by(desc(models.Game.score), models.Game.created_on)
-    games = games.limit(ALL_TIME_LEADERBOARD_LIMIT).all()
+    games = games.order_by(desc(models.Game.score), models.Game.created_on).all()
+    games = utils.remove_duplicates(games)
+    games = games[:ALL_TIME_LEADERBOARD_LIMIT]
 
     for game in games:
         response.append(game_to_game_response(game))
