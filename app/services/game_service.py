@@ -64,9 +64,12 @@ def get_daily_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
 
     games = db.query(models.Game)
 
-    games = games.filter(models.Game.created_on >= today)
-    games = games.order_by(desc(models.Game.score), models.Game.created_on).all()
+    games = games.filter(models.Game.created_on >= today).all()
+
     games = utils.remove_duplicates(games)
+
+    games = games.sort(key=lambda x: x.created_on)
+    games = games.sort(key=lambda x: x.score, reverse=True)
 
     for game in games:
         response.append(game_to_game_response(game))
@@ -82,9 +85,12 @@ def get_weekly_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
 
     games = db.query(models.Game)
 
-    games = games.filter(models.Game.created_on >= weekstart)
-    games = games.order_by(desc(models.Game.score), models.Game.created_on).all()
+    games = games.filter(models.Game.created_on >= weekstart).all()
+
     games = utils.remove_duplicates(games)
+
+    games = games.sort(key=lambda x: x.created_on)
+    games = games.sort(key=lambda x: x.score, reverse=True)
 
     for game in games:
         response.append(game_to_game_response(game))
@@ -96,10 +102,13 @@ def get_all_time_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
 
     response = []
 
-    games = db.query(models.Game)
+    games = db.query(models.Game).all()
 
-    games = games.order_by(desc(models.Game.score), models.Game.created_on).all()
     games = utils.remove_duplicates(games)
+
+    games.sort(key=lambda x: x.created_on)
+    games.sort(key=lambda x: x.score, reverse=True)
+
     games = games[:ALL_TIME_LEADERBOARD_LIMIT]
 
     for game in games:

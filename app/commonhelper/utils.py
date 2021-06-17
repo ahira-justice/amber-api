@@ -25,16 +25,10 @@ def generate_reset_code() -> int:
 
 
 def remove_duplicates(games: List[models.Game]) -> List[models.Game]:
-    user_ids = [].append(games[0].user_id)
-    result = games.copy()
+    result_dict = {}
 
-    for index in range(1, len(games)):
-        game = games[index]
+    for game in games:
+        if game.user_id not in result_dict.keys():
+            result_dict[game.user_id] = game
 
-        if game.user_id not in user_ids:
-            user_ids.append(game.user_id)
-
-        if game.user_id in user_ids:
-            result.pop(index)
-
-    return result
+    return list(result_dict.values())
