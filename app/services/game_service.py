@@ -68,8 +68,8 @@ def get_daily_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
 
     games = utils.remove_duplicates(games)
 
-    games = games.sort(key=lambda x: x.created_on)
-    games = games.sort(key=lambda x: x.score, reverse=True)
+    games.sort(key=lambda x: x.created_on)
+    games.sort(key=lambda x: x.score, reverse=True)
 
     for game in games:
         response.append(game_to_game_response(game))
@@ -89,8 +89,8 @@ def get_weekly_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
 
     games = utils.remove_duplicates(games)
 
-    games = games.sort(key=lambda x: x.created_on)
-    games = games.sort(key=lambda x: x.score, reverse=True)
+    games.sort(key=lambda x: x.created_on)
+    games.sort(key=lambda x: x.score, reverse=True)
 
     for game in games:
         response.append(game_to_game_response(game))
