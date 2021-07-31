@@ -75,6 +75,7 @@ class UserUpdate(BaseModel):
     phone_number: str
     first_name: str
     last_name: str
+    instagram: str
     password: str
 
     @validator("email")
@@ -108,6 +109,14 @@ class UserUpdate(BaseModel):
             raise ValueError("User first name cannot be null")
 
         return first_name
+
+    @validator("instagram")
+    def instagram_is_not_null(cls, instagram):
+
+        if not user_validator.is_not_null(instagram):
+            raise ValueError("User instagram handle cannot be null")
+
+        return instagram
 
 
 class Login(BaseModel):
