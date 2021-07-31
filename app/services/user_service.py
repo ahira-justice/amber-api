@@ -128,6 +128,7 @@ def update_user(db: Session, id: int, request: Request, user_data: user_dtos.Use
     user.email = user_data.email
     user.fname = user_data.first_name
     user.lname = user_data.last_name
+    user.instagram = user_data.instagram
     user.password_hash = password_hash
     user.password_salt = password_salt
 

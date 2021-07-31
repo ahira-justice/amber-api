@@ -20,9 +20,10 @@ class User(BaseEntity):
 
     __tablename__ = "users"
 
-    lname = Column(String, nullable=False)
-    fname = Column(String, nullable=False)
+    lname = Column(String, nullable=True)
+    fname = Column(String, nullable=True)
     username = Column(String, unique=True, nullable=False, index=True)
+    instagram = Column(String, unique=True, nullable=True)
     email = Column(String, unique=True, nullable=True, index=True)
     phone_number = Column(String, unique=True, nullable=True, index=True)
     password_hash = Column(LargeBinary, nullable=True)

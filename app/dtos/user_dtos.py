@@ -10,8 +10,9 @@ class UserResponse(BaseModel):
     username: str
     email: Optional[EmailStr]
     phone_number: Optional[str]
-    first_name: str
-    last_name: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    instagram: Optional[str]
     state: Optional[str]
     avatar: Optional[int]
     is_admin: bool = False
@@ -29,8 +30,9 @@ class UserAvatar(BaseModel):
 class UserCreate(BaseModel):
     email: EmailStr
     phone_number: Optional[str]
-    first_name: str
-    last_name: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    instagram: Optional[str]
     state: Optional[str]
     password: str
 
@@ -50,21 +52,14 @@ class UserCreate(BaseModel):
 
         return email
 
-    @validator("last_name")
-    def last_name_is_not_null(cls, last_name):
+    @validator("instagram")
+    def instagram_is_unique(cls, instagram):
 
-        if not user_validator.is_not_null(last_name):
-            raise ValueError("User last name cannot be null")
+        if not user_validator.instagram_is_unique(instagram):
+            raise ValueError("User with instagram handle: '{instagram}' already registered")
 
-        return last_name
+        return instagram
 
-    @validator("first_name")
-    def first_name_is_not_null(cls, first_name):
-
-        if not user_validator.is_not_null(first_name):
-            raise ValueError("User first name cannot be null")
-
-        return first_name
 
     @validator("password")
     def password_is_not_null(cls, password):
@@ -80,6 +75,7 @@ class UserUpdate(BaseModel):
     phone_number: str
     first_name: str
     last_name: str
+    instagram: str
     password: str
 
     @validator("email")
@@ -113,6 +109,14 @@ class UserUpdate(BaseModel):
             raise ValueError("User first name cannot be null")
 
         return first_name
+
+    @validator("instagram")
+    def instagram_is_not_null(cls, instagram):
+
+        if not user_validator.is_not_null(instagram):
+            raise ValueError("User instagram handle cannot be null")
+
+        return instagram
 
 
 class Login(BaseModel):

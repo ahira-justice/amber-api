@@ -12,6 +12,7 @@ def user_to_user_response(user: models.User) -> user_dtos.UserResponse:
         phone_number=user.phone_number,
         first_name=user.fname,
         last_name=user.lname,
+        instagram=user.instagram,
         state=user.state,
         avatar=user.avatar,
         is_admin=user.is_admin,
@@ -31,6 +32,7 @@ def user_create_to_user(user_create: user_dtos.UserCreate) -> models.User:
         phone_number=user_create.phone_number,
         fname=user_create.first_name,
         lname=user_create.last_name,
+        instagram=user_create.instagram,
         state=user_create.state,
         password_hash=password_hash,
         password_salt=password_salt
