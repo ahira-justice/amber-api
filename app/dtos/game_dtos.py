@@ -6,8 +6,9 @@ class GameResponse(BaseModel):
     id: int
     score: int
     username: str
-    first_name: str
-    last_name: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    instagram: Optional[str]
     avatar: Optional[int]
 
 
