@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from app.data import models
-from app.domain.constants import *
+from app.domain.constants import USERS_URL
 from app.main import app
 from tests.domain import create_user
 from tests.utils import get_db

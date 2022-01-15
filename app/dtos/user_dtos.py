@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel, EmailStr, validator, root_validator
 
-from app.domain.config import *
+from app.domain.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.validators import user_validator
 
 

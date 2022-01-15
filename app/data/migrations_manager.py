@@ -2,7 +2,7 @@ from alembic.config import Config
 from alembic import command
 from sqlalchemy.orm.session import Session
 
-from app.domain.config import *
+from app.domain.config import ADMIN_EMAIL, ADMIN_FIRST_NAME, ADMIN_LAST_NAME, ADMIN_PASSWORD
 from app.domain.database import SessionLocal
 from app.data import models
 from loguru import logger

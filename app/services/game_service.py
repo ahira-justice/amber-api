@@ -5,10 +5,11 @@ from sqlalchemy import desc
 from sqlalchemy.orm.session import Session
 from typing import List
 
-from app.domain.config import *
+from app.data import models
+from app.domain.config import ALL_TIME_LEADERBOARD_LIMIT
 from app.dtos import game_dtos
 from app.exceptions.app_exceptions import ForbiddenException, NotFoundException
-from app.mappings.game_mappings import *
+from app.mappings.game_mappings import game_create_to_game, game_to_game_response
 from app.services import user_service
 
 

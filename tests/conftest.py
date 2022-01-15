@@ -1,8 +1,8 @@
 import pytest
 import os
 
-from app.domain.config import *
-from app.domain.constants import *
+from app.domain.config import ENVIRONMENT
+from app.domain.constants import TEST_DATABASE_FILE
 from tests.utils import get_db, setup, clear_db_data
 
 

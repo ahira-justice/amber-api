@@ -2,14 +2,13 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm.session import Session
 from typing import List
 
-from app.domain.config import *
-from app.domain.constants import *
+from app.domain.constants import USERS_URL
 from app.domain.database import get_db
 from app.auth.bearer import BearerAuth
 from app.dtos import user_dtos
 from app.dtos import error
 from app.exceptions.app_exceptions import NotFoundException, UnauthorizedRequestException
-from app.mappings.user_mappings import *
+from app.mappings.user_mappings import external_login_to_create_token, login_to_create_token
 from app.services import auth_service, jwt_service, user_service
 
 

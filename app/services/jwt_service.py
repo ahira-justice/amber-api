@@ -3,7 +3,7 @@ import time
 
 from datetime import datetime, timedelta
 
-from app.domain.config import *
+from app.domain.config import ACCESS_TOKEN_EXPIRE_MINUTES, JWT_SIGNING_ALGORITHM, SECRET_KEY
 from app.dtos import user_dtos
 
 
@@ -34,12 +34,12 @@ def decode_jwt(token: str) -> dict:
         expiry = decoded_token.get("exp")
 
         if not username:
-            return None
+            return {}
 
         if expiry < time.time():
-            return None
+            return {}
 
         return decoded_token
 
     except jwt.PyJWTError:
-        return None
+        return {}
