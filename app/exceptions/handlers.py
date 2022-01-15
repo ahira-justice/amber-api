@@ -8,7 +8,7 @@ from starlette import status
 from starlette.responses import JSONResponse
 
 from app.exceptions.app_exceptions import AppDomainException, SystemErrorException
-from app.logger.custom_logger import logger
+from loguru import logger
 
 
 async def validation_exception_handler(request: Request, ex: RequestValidationError) -> JSONResponse:

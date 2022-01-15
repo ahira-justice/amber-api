@@ -5,7 +5,7 @@ from sqlalchemy.orm.session import Session
 from app.domain.config import *
 from app.domain.database import SessionLocal
 from app.data import models
-from app.logger.custom_logger import logger
+from loguru import logger
 from app.services import user_service
 
 

@@ -10,7 +10,7 @@ from app.controllers.game_controller import controller as game_controller
 from app.data.migrations_manager import migrate_database
 from app.exceptions.app_exceptions import AppDomainException
 from app.exceptions.handlers import exception_handler, app_exception_handler, validation_exception_handler
-from app.logger.custom_logger import logger
+from loguru import logger
 from app.middleware.handlers import http_logging_middleware
 
 
