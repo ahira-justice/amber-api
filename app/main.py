@@ -3,14 +3,14 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
-from app.domain.config import *
-from app.domain.constants import *
 from app.controllers.user_controller import controller as user_controller
 from app.controllers.game_controller import controller as game_controller
 from app.data.migrations_manager import migrate_database
+from app.domain.config import ENVIRONMENT, SQLALCHEMY_DATABASE_URL
+from app.domain.constants import ALEMBIC_INI_DIR, DOCS_URL, MIGRATIONS_DIR, OPEN_API_URL
 from app.exceptions.app_exceptions import AppDomainException
 from app.exceptions.handlers import exception_handler, app_exception_handler, validation_exception_handler
-from app.logger.custom_logger import logger
+from loguru import logger
 from app.middleware.handlers import http_logging_middleware
 
 

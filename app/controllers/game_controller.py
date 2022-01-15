@@ -3,7 +3,7 @@ from sqlalchemy.orm.session import Session
 from typing import List
 
 from app.auth.bearer import BearerAuth
-from app.domain.constants import *
+from app.domain.constants import GAMES_URL
 from app.domain.database import get_db
 from app.dtos import error
 from app.dtos import game_dtos

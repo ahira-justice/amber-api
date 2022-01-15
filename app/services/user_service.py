@@ -5,12 +5,12 @@ from sqlalchemy.orm.session import Session
 from typing import List
 
 from app.data import models
-from app.domain.config import *
-from app.domain.constants import *
+from app.domain.config import RESET_CODE_EXPIRE_MINUTES
+from app.domain.constants import FORGOT_PASSWORD_TEMPLATE
 from app.dtos import user_dtos
 from app.commonhelper import utils
 from app.exceptions.app_exceptions import BadRequestException, ForbiddenException, NotFoundException
-from app.mappings.user_mappings import *
+from app.mappings.user_mappings import external_login_to_user, user_create_to_user, user_to_user_response
 from app.services import email_service, jwt_service
 
 

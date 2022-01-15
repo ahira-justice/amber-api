@@ -2,7 +2,7 @@ from sqlalchemy.orm.session import Session
 
 from app.commonhelper import utils
 from app.data import models
-from app.domain.config import *
+from app.domain.config import RESET_CODE_EXPIRE_MINUTES
 
 
 def create_user(db: Session) -> models.User:

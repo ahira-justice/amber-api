@@ -1,11 +1,7 @@
 import hashlib
 
-from base64 import b64decode
-from pydantic import EmailStr
 from sqlalchemy.orm.session import Session
 
-from app.domain.config import *
-from app.domain.database import SessionLocal
 from app.data import models
 from app.dtos import user_dtos
 
