@@ -7,9 +7,7 @@ from app.domain.database import get_db
 from app.auth.bearer import BearerAuth
 from app.dtos import user_dtos
 from app.dtos import error
-from app.exceptions.app_exceptions import NotFoundException, UnauthorizedRequestException
-from app.mappings.user_mappings import external_login_to_create_token, login_to_create_token
-from app.services import auth_service, jwt_service, user_service
+from app.services import user_service
 
 
 controller = APIRouter(
@@ -38,111 +36,6 @@ async def register(
 
     new_user = user_service.create_user(db, user_data)
     return new_user
-
-
-@controller.post(
-    path="/login",
-    status_code=200,
-    responses={
-        200: {
-            "model": user_dtos.Token
-        },
-        401: {
-            "model": error.ErrorResponse
-        },
-        422: {
-            "model": error.ValidationErrorResponse
-        }
-    }
-)
-async def login(
-    login_data: user_dtos.Login,
-    db: Session = Depends(get_db)
-):
-    """Generate access token for valid credentials"""
-
-    if not auth_service.authenticate_user(db, login_data.username, login_data.password):
-        raise UnauthorizedRequestException("Incorrect username or password")
-
-    create_token_data = login_to_create_token(login_data)
-    token = jwt_service.create_access_token(create_token_data)
-
-    return token
-
-
-@controller.post(
-    path="/externallogin",
-    status_code=200,
-    responses={
-        200: {
-            "model": user_dtos.Token
-        },
-        422: {
-            "model": error.ValidationErrorResponse
-        }
-    }
-)
-async def external_login(
-    external_login_data: user_dtos.ExternalLogin,
-    db: Session = Depends(get_db)
-):
-    """Generate access token for valid credentials for social login"""
-
-    username = external_login_data.email if external_login_data.email else external_login_data.phone_number
-
-    user = user_service.get_user_by_username(db, username)
-
-    if not user:
-        user_service.create_social_user(db, external_login_data)
-
-    create_token_data = external_login_to_create_token(external_login_data)
-    token = jwt_service.create_access_token(create_token_data)
-
-    return token
-
-
-@controller.post(
-    path="/forgotpassword",
-    status_code=204,
-    responses={
-        204: {},
-        404: {
-            "model": error.ErrorResponse
-        },
-        422: {
-            "model": error.ValidationErrorResponse
-        }
-    }
-)
-async def forgot_password(
-    forgot_password_data: user_dtos.ForgotPassword,
-    db: Session = Depends(get_db)
-):
-    """Generate password reset link"""
-    user_service.forgot_password(db, forgot_password_data)
-
-
-@controller.post(
-    path="/resetpassword",
-    status_code=200,
-    responses={
-        200: {
-            "model": user_dtos.UserResponse
-        },
-        404: {
-            "model": error.ErrorResponse
-        },
-        422: {
-            "model": error.ValidationErrorResponse
-        }
-    }
-)
-async def reset_password(
-    reset_password_data: user_dtos.ResetPassword,
-    db: Session = Depends(get_db)
-):
-    """Reset user password"""
-    return user_service.reset_password(db, reset_password_data)
 
 
 @controller.get(

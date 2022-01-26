@@ -4,10 +4,10 @@ import time
 from datetime import datetime, timedelta
 
 from app.domain.config import ACCESS_TOKEN_EXPIRE_MINUTES, JWT_SIGNING_ALGORITHM, SECRET_KEY
-from app.dtos import user_dtos
+from app.dtos import auth_dtos, user_dtos
 
 
-def create_access_token(create_token_data: user_dtos.CreateToken) -> user_dtos.Token:
+def create_access_token(create_token_data: auth_dtos.CreateToken) -> auth_dtos.Token:
     data = {"sub": create_token_data.username}
 
     if create_token_data.expires:
@@ -18,7 +18,7 @@ def create_access_token(create_token_data: user_dtos.CreateToken) -> user_dtos.T
     data.update({"exp": expire})
     encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=JWT_SIGNING_ALGORITHM)
 
-    token = user_dtos.Token(
+    token = auth_dtos.Token(
         access_token=encoded_jwt,
         token_type="bearer"
     )

@@ -1,5 +1,5 @@
 from app.data import models
-from app.dtos import user_dtos
+from app.dtos import auth_dtos, user_dtos
 from app.commonhelper import utils
 
 
@@ -41,7 +41,7 @@ def user_create_to_user(user_create: user_dtos.UserCreate) -> models.User:
     return result
 
 
-def external_login_to_user(external_login: user_dtos.ExternalLogin) -> models.User:
+def external_login_to_user(external_login: auth_dtos.ExternalLogin) -> models.User:
 
     username = external_login.email if external_login.email else external_login.phone_number
 
@@ -56,9 +56,9 @@ def external_login_to_user(external_login: user_dtos.ExternalLogin) -> models.Us
     return result
 
 
-def login_to_create_token(login: user_dtos.Login) -> user_dtos.CreateToken:
+def login_to_create_token(login: auth_dtos.Login) -> auth_dtos.CreateToken:
 
-    result = user_dtos.CreateToken(
+    result = auth_dtos.CreateToken(
         username=login.username,
         expires=login.expires
     )
@@ -66,11 +66,11 @@ def login_to_create_token(login: user_dtos.Login) -> user_dtos.CreateToken:
     return result
 
 
-def external_login_to_create_token(external_login: user_dtos.ExternalLogin) -> user_dtos.CreateToken:
+def external_login_to_create_token(external_login: auth_dtos.ExternalLogin) -> auth_dtos.CreateToken:
 
     username = external_login.email if external_login.email else external_login.phone_number
 
-    result = user_dtos.CreateToken(
+    result = auth_dtos.CreateToken(
         username=username,
         expires=external_login.expires
     )
