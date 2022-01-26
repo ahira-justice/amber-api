@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, LargeBinary
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, LargeBinary, String
 from sqlalchemy.orm import relationship
 
 from datetime import datetime
@@ -32,18 +32,18 @@ class User(BaseEntity):
     avatar = Column(Integer, nullable=True)
     is_admin = Column(Boolean, nullable=False, default=False)
     is_staff = Column(Boolean, nullable=False, default=False)
-    passwordresets = relationship("PasswordReset", back_populates="user", cascade="all, delete-orphan")
     games = relationship("Game", back_populates="user", cascade="all, delete-orphan")
 
 
-class PasswordReset(BaseEntity):
+class UserToken(BaseEntity):
 
-    __tablename__ = "passwordresets"
+    __tablename__ = "user_tokens"
 
-    reset_code = Column(String, nullable=False, index=True)
+    token = Column(String, nullable=False, index=True)
+    token_type = Column(String, nullable=False)
     expiry = Column(Integer, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"))
-    user = relationship("User", back_populates="passwordresets")
+    user = relationship("User")
 
 
 class Game(BaseEntity):
