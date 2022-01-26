@@ -119,12 +119,7 @@ async def forgot_password(
     db: Session = Depends(get_db)
 ):
     """Generate password reset link"""
-    user = user_service.get_user_by_username(db, forgot_password_data.email)
-
-    if not user:
-        raise NotFoundException(message=f"User with email: {forgot_password_data.email} does not exist")
-
-    user_service.forgot_password(db, user)
+    user_service.forgot_password(db, forgot_password_data)
 
 
 @controller.post(
@@ -147,8 +142,7 @@ async def reset_password(
     db: Session = Depends(get_db)
 ):
     """Reset user password"""
-    user = user_service.reset_password(db, reset_password_data)
-    return user
+    return user_service.reset_password(db, reset_password_data)
 
 
 @controller.get(
@@ -293,13 +287,7 @@ async def update(
 ):
     """Update user"""
 
-    user = user_service.get_user_by_id(db, id)
-
-    if not user:
-        raise NotFoundException(message=f"User with id: {id} does not exist")
-
-    updated_user = user_service.update_user(db, id, request, user_data)
-    return updated_user
+    return user_service.update_user(db, id, request, user_data)
 
 
 @controller.put(
@@ -335,10 +323,4 @@ async def change_admin_status(
 ):
     """Update user admin status"""
 
-    user = user_service.get_user_by_id(db, id)
-
-    if not user:
-        raise NotFoundException(message=f"User with id: {id} does not exist")
-
-    updated_user = user_service.change_user_admin_status(db, id, user_admin_status, request)
-    return updated_user
+    return user_service.change_user_admin_status(db, id, user_admin_status, request)

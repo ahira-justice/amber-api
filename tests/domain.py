@@ -1,8 +1,9 @@
+import string
 from sqlalchemy.orm.session import Session
 
 from app.commonhelper import utils
 from app.data import models
-from app.domain.config import RESET_CODE_EXPIRE_MINUTES
+from app.domain.config import USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES, USER_TOKEN_RESET_PASSWORD_LENGTH
 
 
 def create_user(db: Session) -> models.User:
@@ -43,19 +44,19 @@ def create_game(db: Session) -> models.Game:
     return game
 
 
-def create_password_reset(db: Session) -> models.PasswordReset:
+def create_user_token(db: Session) -> models.UserToken:
 
     user = create_user(db)
 
-    password_reset = models.PasswordReset(
-        reset_code=utils.generate_reset_code(),
-        expiry=RESET_CODE_EXPIRE_MINUTES,
+    user_token = models.UserToken(
+        token=utils.generate_code(USER_TOKEN_RESET_PASSWORD_LENGTH, string.ascii_letters),
+        expiry=USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES,
         user_id=user.id
     )
 
-    db.add(password_reset)
+    db.add(user_token)
     db.commit()
-    db.refresh(password_reset)
+    db.refresh(user_token)
     db.close()
 
-    return password_reset
+    return user_token
