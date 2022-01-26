@@ -4,6 +4,7 @@ from sqlalchemy.orm.session import Session
 from app.commonhelper import utils
 from app.data.models import UserToken
 from app.data.enums import UserTokenType
+from app.dtos.user_token_dtos import VerifyUserTokenRequest
 from app.exceptions.app_exceptions import BadRequestException
 from app.services import user_service
 
@@ -37,6 +38,16 @@ def use_token(db: Session, user_id: int, token: str, token_type: UserTokenType):
     
     db.query(UserToken).filter(UserToken.user_id == user_id, UserToken.token_type == token_type.name).delete()
     db.commit()
+
+
+def verify_user_token(db: Session, request: VerifyUserTokenRequest) -> bool:
+
+    user = user_service.get_user_by_username(request.username)
+
+    if request.token_type not in UserTokenType.__members__:
+        raise BadRequestException("Invalid token type")
+
+    return validate_token(db, user.id, request.token, UserTokenType[request.token_type])
 
 
 def validate_token(db: Session, user_id: int, token: str, token_type: UserTokenType) -> bool:
