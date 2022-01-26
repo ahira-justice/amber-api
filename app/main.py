@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse
 from loguru import logger
 from loguru_logging_intercept import setup_loguru_logging_intercept as logging_intercept
 
+from app.controllers.auth_controller import controller as auth_controller
 from app.controllers.user_controller import controller as user_controller
 from app.controllers.user_token_controller import controller as  user_token_controller
 from app.controllers.game_controller import controller as game_controller
@@ -61,6 +62,7 @@ async def custom_http_logging_middleware(request: Request, call_next):
     return await http_logging_middleware(request, call_next)
 
 
+app.include_router(auth_controller)
 app.include_router(user_controller)
 app.include_router(user_token_controller)
 app.include_router(game_controller)

@@ -9,7 +9,7 @@ from app.data import models
 from app.data.enums import UserTokenType
 from app.domain.config import USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES, USER_TOKEN_RESET_PASSWORD_LENGTH
 from app.domain.constants import FORGOT_PASSWORD_TEMPLATE
-from app.dtos import user_dtos
+from app.dtos import auth_dtos, user_dtos
 from app.commonhelper import utils
 from app.exceptions.app_exceptions import BadRequestException, ForbiddenException, NotFoundException
 from app.mappings.user_mappings import external_login_to_user, user_create_to_user, user_to_user_response
@@ -27,7 +27,7 @@ def create_user(db: Session, user_data: user_dtos.UserCreate) -> user_dtos.UserR
     return user_to_user_response(user)
 
 
-def create_social_user(db: Session, external_login_data: user_dtos.ExternalLogin) -> user_dtos.UserResponse:
+def create_social_user(db: Session, external_login_data: auth_dtos.ExternalLogin) -> user_dtos.UserResponse:
 
     user = external_login_to_user(external_login_data)
 
@@ -156,34 +156,6 @@ def get_user(db: Session, id: int, request: Request) -> user_dtos.UserResponse:
 
     if not current_user.is_admin and current_user.username != user.username:
         raise ForbiddenException(current_user.email)
-
-    return user_to_user_response(user)
-
-
-def forgot_password(db: Session, forgot_password_data: user_dtos.ForgotPassword) -> None:
-    user = get_user_by_username(db, forgot_password_data.username)
-
-    user_token = user_token_service.generate_token(db, USER_TOKEN_RESET_PASSWORD_LENGTH, string.ascii_letters, USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES, UserTokenType.RESET_PASSWORD, user.id)
-
-    payload = {
-        "token": user_token.token
-    }
-
-    email_service.send_email(forgot_password_data.email, FORGOT_PASSWORD_TEMPLATE, payload)
-
-
-def reset_password(db: Session, reset_password_data: user_dtos.ResetPassword) -> user_dtos.UserResponse:
-    user = get_user_by_username(db, reset_password_data.username)
-
-    user_token_service.use_token(db, user.id, reset_password_data.token, UserTokenType.RESET_PASSWORD)
-
-    password_hash, password_salt = utils.generate_hash_and_salt(reset_password_data.password)
-
-    user.password_hash = password_hash
-    user.password_salt = password_salt
-
-    db.commit()
-    db.refresh(user)
 
     return user_to_user_response(user)
 
