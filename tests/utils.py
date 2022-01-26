@@ -21,7 +21,7 @@ def setup():
 def clear_db_data(db: Session):
     db.query(models.User).delete()
     db.query(models.Game).delete()
-    db.query(models.PasswordReset).delete()
+    db.query(models.UserToken).delete()
     db.commit()
 
     db.close()

@@ -1,6 +1,6 @@
 import hashlib
 import os
-import uuid
+import random
 
 from typing import List, Tuple
 
@@ -20,8 +20,8 @@ def generate_hash_and_salt(password: str) -> Tuple[bytes]:
     return key, salt
 
 
-def generate_reset_code() -> int:
-    return uuid.uuid4()
+def generate_code(length: int, key_space: str) -> str:
+    return ''.join((random.choice(key_space) for x in range(length)))
 
 
 def remove_duplicates(games: List[models.Game]) -> List[models.Game]:

@@ -1,17 +1,19 @@
-from datetime import datetime, timedelta
+import string
+
 from fastapi import Request
 from pydantic import EmailStr
 from sqlalchemy.orm.session import Session
 from typing import List
 
 from app.data import models
-from app.domain.config import RESET_CODE_EXPIRE_MINUTES
+from app.data.enums import UserTokenType
+from app.domain.config import USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES, USER_TOKEN_RESET_PASSWORD_LENGTH
 from app.domain.constants import FORGOT_PASSWORD_TEMPLATE
 from app.dtos import user_dtos
 from app.commonhelper import utils
 from app.exceptions.app_exceptions import BadRequestException, ForbiddenException, NotFoundException
 from app.mappings.user_mappings import external_login_to_user, user_create_to_user, user_to_user_response
-from app.services import email_service, jwt_service
+from app.services import email_service, jwt_service, user_token_service
 
 
 def create_user(db: Session, user_data: user_dtos.UserCreate) -> user_dtos.UserResponse:
@@ -22,9 +24,7 @@ def create_user(db: Session, user_data: user_dtos.UserCreate) -> user_dtos.UserR
     db.commit()
     db.refresh(user)
 
-    response = user_to_user_response(user)
-
-    return response
+    return user_to_user_response(user)
 
 
 def create_social_user(db: Session, external_login_data: user_dtos.ExternalLogin) -> user_dtos.UserResponse:
@@ -35,9 +35,7 @@ def create_social_user(db: Session, external_login_data: user_dtos.ExternalLogin
     db.commit()
     db.refresh(user)
 
-    response = user_to_user_response(user)
-
-    return response
+    return user_to_user_response(user)
 
 
 def seed_user(db: Session, email: EmailStr, first_name: str, last_name: str, password: str) -> user_dtos.UserResponse:
@@ -62,9 +60,7 @@ def set_super_admin(db: Session, id: int):
     db.commit()
     db.refresh(user)
 
-    response = user_to_user_response(user)
-
-    return response
+    return user_to_user_response(user)
 
 
 def change_user_admin_status(db: Session, id: int, user_admin_status: user_dtos.UserAdminStatus, request: Request) -> user_dtos.UserResponse:
@@ -74,7 +70,7 @@ def change_user_admin_status(db: Session, id: int, user_admin_status: user_dtos.
     if not current_user.is_staff:
         raise ForbiddenException(current_user.email)
 
-    user = db.query(models.User).filter(models.User.id == id).first()
+    user = get_user_by_id(db, id)
 
     if user.is_staff:
         raise BadRequestException("Cannot modify admin status of super admin user")
@@ -100,9 +96,7 @@ def change_user_avatar(db: Session, user_avatar: user_dtos.UserAvatar, request: 
     db.commit()
     db.refresh(user)
 
-    response = user_to_user_response(user)
-
-    return response
+    return user_to_user_response(user)
 
 
 def update_user(db: Session, id: int, request: Request, user_data: user_dtos.UserUpdate) -> user_dtos.UserResponse:
@@ -111,7 +105,7 @@ def update_user(db: Session, id: int, request: Request, user_data: user_dtos.Use
 
     password_hash, password_salt = utils.generate_hash_and_salt(user_data.password)
 
-    user = db.query(models.User).filter(models.User.id == id).first()
+    user = get_user_by_id(db, id)
 
     if user.is_staff:
         raise BadRequestException("Cannot modify super admin user")
@@ -135,9 +129,7 @@ def update_user(db: Session, id: int, request: Request, user_data: user_dtos.Use
     db.commit()
     db.refresh(user)
 
-    response = user_to_user_response(user)
-
-    return response
+    return user_to_user_response(user)
 
 
 def get_users(db: Session, request: Request) -> List[user_dtos.UserResponse]:
@@ -162,57 +154,38 @@ def get_user(db: Session, id: int, request: Request) -> user_dtos.UserResponse:
     current_user = get_current_user(db, request)
     user = get_user_by_id(db, id)
 
-    if not user:
-        raise NotFoundException(message=f"User with id: {id} does not exist")
-
     if not current_user.is_admin and current_user.username != user.username:
         raise ForbiddenException(current_user.email)
 
-    return user
+    return user_to_user_response(user)
 
 
-def forgot_password(db: Session, user: user_dtos.UserResponse) -> None:
+def forgot_password(db: Session, forgot_password_data: user_dtos.ForgotPassword) -> None:
+    user = get_user_by_username(db, forgot_password_data.username)
 
-    password_reset = models.PasswordReset(
-        reset_code=utils.generate_reset_code(),
-        expiry=RESET_CODE_EXPIRE_MINUTES
-    )
-    password_reset.user_id = user.id
-
-    db.add(password_reset)
-    db.commit()
-    db.refresh(password_reset)
+    user_token = user_token_service.generate_token(db, USER_TOKEN_RESET_PASSWORD_LENGTH, string.ascii_letters, USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES, UserTokenType.RESET_PASSWORD, user.id)
 
     payload = {
-        "reset_code": password_reset.reset_code
+        "token": user_token.token
     }
 
-    email_service.send_email(user.email, FORGOT_PASSWORD_TEMPLATE, payload)
+    email_service.send_email(forgot_password_data.email, FORGOT_PASSWORD_TEMPLATE, payload)
 
 
 def reset_password(db: Session, reset_password_data: user_dtos.ResetPassword) -> user_dtos.UserResponse:
+    user = get_user_by_username(db, reset_password_data.username)
 
-    password_reset = get_password_reset_by_reset_code(db, reset_password_data.reset_code)
-
-    if not password_reset:
-        raise BadRequestException("Invalid reset code")
-
-    expiry = password_reset.created_on + timedelta(minutes=password_reset.expiry)
-    if datetime.utcnow() > expiry:
-        raise BadRequestException("Reset code has expired, please try again")
+    user_token_service.use_token(db, user.id, reset_password_data.token, UserTokenType.RESET_PASSWORD)
 
     password_hash, password_salt = utils.generate_hash_and_salt(reset_password_data.password)
 
-    user = password_reset.user
     user.password_hash = password_hash
     user.password_salt = password_salt
 
     db.commit()
     db.refresh(user)
 
-    response = user_to_user_response(user)
-
-    return response
+    return user_to_user_response(user)
 
 
 def get_current_user(db: Session, request: Request) -> user_dtos.UserResponse:
@@ -220,31 +193,27 @@ def get_current_user(db: Session, request: Request) -> user_dtos.UserResponse:
     username = get_username_from_token(request)
     user = get_user_by_username(db, username)
 
-    return user
+    return user_to_user_response(user)
 
 
-def get_user_by_username(db: Session, username: str) -> user_dtos.UserResponse:
+def get_user_by_username(db: Session, username: str) -> models.User:
 
     user = db.query(models.User).filter(models.User.username == username).first()
 
     if not user:
-        return None
+        raise NotFoundException(message=f"User with username: {username} does not exist")
 
-    response = user_to_user_response(user)
-
-    return response
+    return user
 
 
-def get_user_by_id(db: Session, id: int) -> user_dtos.UserResponse:
+def get_user_by_id(db: Session, id: int) -> models.User:
 
     user = db.query(models.User).filter(models.User.id == id).first()
 
     if not user:
-        return None
+        raise NotFoundException(message=f"User with id: {id} does not exist")
 
-    response = user_to_user_response(user)
-
-    return response
+    return user
 
 
 def get_username_from_token(request: Request) -> EmailStr:
@@ -254,8 +223,3 @@ def get_username_from_token(request: Request) -> EmailStr:
     username = payload.get("sub")
 
     return username
-
-
-def get_password_reset_by_reset_code(db: Session, reset_code: str) -> models.PasswordReset:
-    password_reset = db.query(models.PasswordReset).filter(models.PasswordReset.reset_code == reset_code).first()
-    return password_reset

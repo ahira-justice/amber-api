@@ -168,12 +168,13 @@ class ExternalLogin(BaseModel):
 
 
 class ForgotPassword(BaseModel):
-    email: EmailStr
+    username: str
 
 
 class ResetPassword(BaseModel):
+    username: str
     password: str
-    reset_code: str
+    token: str
 
 
 class Password(BaseModel):
