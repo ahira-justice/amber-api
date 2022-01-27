@@ -4,7 +4,7 @@ from sqlalchemy.orm.session import Session
 from app.domain.constants import AUTH_URL
 from app.domain.database import get_db
 from app.dtos import auth_dtos, user_dtos
-from app.dtos import error
+from app.dtos import error_dtos
 from app.exceptions.app_exceptions import UnauthorizedRequestException
 from app.mappings.auth_mappings import external_login_to_create_token, login_to_create_token
 from app.services import auth_service, jwt_service, user_service
@@ -24,10 +24,10 @@ controller = APIRouter(
             "model": auth_dtos.Token
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         422: {
-            "model": error.ValidationErrorResponse
+            "model": error_dtos.ValidationErrorResponse
         }
     }
 )
@@ -54,7 +54,7 @@ async def login(
             "model": auth_dtos.Token
         },
         422: {
-            "model": error.ValidationErrorResponse
+            "model": error_dtos.ValidationErrorResponse
         }
     }
 )
@@ -83,10 +83,10 @@ async def external_login(
     responses={
         204: {},
         404: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         422: {
-            "model": error.ValidationErrorResponse
+            "model": error_dtos.ValidationErrorResponse
         }
     }
 )
@@ -106,10 +106,10 @@ async def forgot_password(
             "model": user_dtos.UserResponse
         },
         404: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         422: {
-            "model": error.ValidationErrorResponse
+            "model": error_dtos.ValidationErrorResponse
         }
     }
 )
