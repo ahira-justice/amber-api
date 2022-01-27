@@ -58,7 +58,8 @@ def authenticate_user(db: Session, username: str, password: str) -> bool:
 def forgot_password(db: Session, forgot_password_data: auth_dtos.ForgotPassword) -> None:
     user = user_service.get_user_by_username(db, forgot_password_data.username)
 
-    user_token = user_token_service.generate_token(db, USER_TOKEN_RESET_PASSWORD_LENGTH, string.ascii_letters, USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES, UserTokenType.RESET_PASSWORD, user.id)
+    user_token = user_token_service.generate_token(db, USER_TOKEN_RESET_PASSWORD_LENGTH, string.ascii_letters,
+                                                   USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES, UserTokenType.RESET_PASSWORD, user.id)
 
     payload = {
         "token": user_token.token
@@ -125,8 +126,6 @@ def decode_jwt(db: Session, token: str) -> dict:
         return {}
 
     return decoded_token
-
-    
 
 
 def verify_jwt(db: Session, token: str) -> bool:
