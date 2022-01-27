@@ -5,8 +5,6 @@ from app.domain.constants import AUTH_URL
 from app.domain.database import get_db
 from app.dtos import auth_dtos, user_dtos
 from app.dtos import error_dtos
-from app.exceptions.app_exceptions import UnauthorizedRequestException
-from app.mappings.auth_mappings import external_login_to_create_token, login_to_create_token
 from app.services import auth_service, user_service
 
 
@@ -31,23 +29,17 @@ controller = APIRouter(
         }
     }
 )
-async def login(
+async def get_access_token(
     login_data: auth_dtos.Login,
     db: Session = Depends(get_db)
 ):
     """Generate access token for valid credentials"""
 
-    if not auth_service.authenticate_user(db, login_data.username, login_data.password):
-        raise UnauthorizedRequestException("Incorrect username or password")
-
-    create_token_data = login_to_create_token(login_data)
-    token = auth_service.create_access_token(create_token_data)
-
-    return token
+    return auth_service.get_access_token(db, login_data)
 
 
 @controller.post(
-    path="/externallogin",
+    path="/external-login",
     status_code=200,
     responses={
         200: {
@@ -58,27 +50,17 @@ async def login(
         }
     }
 )
-async def external_login(
+async def get_access_token_for_external_login(
     external_login_data: auth_dtos.ExternalLogin,
     db: Session = Depends(get_db)
 ):
     """Generate access token for valid credentials for social login"""
 
-    username = external_login_data.email if external_login_data.email else external_login_data.phone_number
-
-    user = user_service.get_user_by_username(db, username)
-
-    if not user:
-        user_service.create_social_user(db, external_login_data)
-
-    create_token_data = external_login_to_create_token(external_login_data)
-    token = auth_service.create_access_token(create_token_data)
-
-    return token
+    return auth_service.get_access_token_for_external_login(db, external_login_data)
 
 
 @controller.post(
-    path="/forgotpassword",
+    path="/forgot-password",
     status_code=204,
     responses={
         204: {},
@@ -95,11 +77,12 @@ async def forgot_password(
     db: Session = Depends(get_db)
 ):
     """Generate password reset link"""
+
     auth_service.forgot_password(db, forgot_password_data)
 
 
 @controller.post(
-    path="/resetpassword",
+    path="/reset-password",
     status_code=200,
     responses={
         200: {
@@ -118,4 +101,5 @@ async def reset_password(
     db: Session = Depends(get_db)
 ):
     """Reset user password"""
+
     return auth_service.reset_password(db, reset_password_data)

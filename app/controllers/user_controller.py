@@ -28,14 +28,13 @@ controller = APIRouter(
         }
     }
 )
-async def register(
+async def create_user(
     user_data: user_dtos.UserCreate,
     db: Session = Depends(get_db)
 ):
     """Create new user"""
 
-    new_user = user_service.create_user(db, user_data)
-    return new_user
+    return user_service.create_user(db, user_data)
 
 
 @controller.get(
@@ -54,14 +53,13 @@ async def register(
         }
     }
 )
-async def get_all(
+async def get_users(
     request: Request,
     db: Session = Depends(get_db)
 ):
     """Get users"""
 
-    users = user_service.get_users(db, request)
-    return users
+    return user_service.get_users(db, request)
 
 
 @controller.get(
@@ -86,8 +84,7 @@ async def get_current_user(
 ):
     """Get current user"""
 
-    user = user_service.get_current_user(db, request)
-    return user
+    return user_service.get_current_user(db, request)
 
 
 @controller.put(
@@ -113,8 +110,7 @@ async def set_user_avatar(
 ):
     """Update user avatar"""
 
-    updated_user = user_service.change_user_avatar(db, user_avatar, request)
-    return updated_user
+    return user_service.set_user_avatar(db, user_avatar, request)
 
 
 @controller.get(
@@ -139,15 +135,14 @@ async def set_user_avatar(
         }
     }
 )
-async def get(
+async def get_user(
     id: int,
     request: Request,
     db: Session = Depends(get_db)
 ):
     """Get user by id"""
 
-    user = user_service.get_user(db, id, request)
-    return user
+    return user_service.get_user(db, id, request)
 
 
 @controller.put(
@@ -172,7 +167,7 @@ async def get(
         }
     }
 )
-async def update(
+async def update_user(
     id: int,
     user_data: user_dtos.UserUpdate,
     request: Request,
@@ -184,7 +179,7 @@ async def update(
 
 
 @controller.put(
-    path="/{id}/adminstatus",
+    path="/{id}/admin-status",
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
@@ -216,4 +211,4 @@ async def change_admin_status(
 ):
     """Update user admin status"""
 
-    return user_service.change_user_admin_status(db, id, user_admin_status, request)
+    return user_service.change_admin_status(db, id, user_admin_status, request)

@@ -11,11 +11,6 @@ class Login(BaseModel):
     expires: Optional[int] = ACCESS_TOKEN_EXPIRE_MINUTES
 
 
-class CreateToken(BaseModel):
-    username: str
-    expires: Optional[int] = ACCESS_TOKEN_EXPIRE_MINUTES
-
-
 class ExternalLogin(BaseModel):
     email: Optional[EmailStr]
     phone_number: Optional[str]
