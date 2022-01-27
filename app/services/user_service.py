@@ -1,19 +1,15 @@
-import string
-
 from fastapi import Request
 from pydantic import EmailStr
 from sqlalchemy.orm.session import Session
 from typing import List
 
 from app.data import models
-from app.data.enums import UserTokenType
-from app.domain.config import USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES, USER_TOKEN_RESET_PASSWORD_LENGTH
-from app.domain.constants import FORGOT_PASSWORD_TEMPLATE
 from app.dtos import auth_dtos, user_dtos
 from app.commonhelper import utils
 from app.exceptions.app_exceptions import BadRequestException, ForbiddenException, NotFoundException
-from app.mappings.user_mappings import external_login_to_user, user_create_to_user, user_to_user_response
-from app.services import email_service, jwt_service, user_token_service
+from app.mappings.auth_mappings import external_login_to_user
+from app.mappings.user_mappings import user_create_to_user, user_to_user_response
+from app.services import jwt_service
 
 
 def create_user(db: Session, user_data: user_dtos.UserCreate) -> user_dtos.UserResponse:

@@ -6,7 +6,7 @@ from app.domain.database import get_db
 from app.dtos import auth_dtos, user_dtos
 from app.dtos import error
 from app.exceptions.app_exceptions import UnauthorizedRequestException
-from app.mappings.user_mappings import external_login_to_create_token, login_to_create_token
+from app.mappings.auth_mappings import external_login_to_create_token, login_to_create_token
 from app.services import auth_service, jwt_service, user_service
 
 
