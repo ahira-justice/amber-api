@@ -15,6 +15,7 @@ idna==2.10
 importlib-metadata==3.7.3
 iniconfig==1.1.1
 loguru==0.5.3
+loguru-logging-intercept==0.1.1
 Mako==1.1.4
 MarkupSafe==1.1.1
 packaging==20.9
