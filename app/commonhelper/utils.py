@@ -7,7 +7,7 @@ from typing import List, Tuple
 from app.data import models
 
 
-def generate_hash_and_salt(password: str) -> Tuple[bytes]:
+def generate_hash_and_salt(password: str) -> tuple[bytes, bytes]:
     salt = os.urandom(32)
     key = hashlib.pbkdf2_hmac(
         "sha256",

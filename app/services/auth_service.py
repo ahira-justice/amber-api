@@ -7,21 +7,19 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm.session import Session
 
 from app.commonhelper import utils
-from app.data import models
 from app.data.enums import UserTokenType
-from app.domain.config import USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES, USER_TOKEN_RESET_PASSWORD_LENGTH, ACCESS_TOKEN_EXPIRE_MINUTES, JWT_SIGNING_ALGORITHM, SECRET_KEY
+from app.domain.config import USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES, USER_TOKEN_RESET_PASSWORD_LENGTH, \
+    ACCESS_TOKEN_EXPIRE_MINUTES, JWT_SIGNING_ALGORITHM, SECRET_KEY
 from app.domain.constants import FORGOT_PASSWORD_TEMPLATE
 from app.dtos import auth_dtos, user_dtos
+from app.exceptions.app_exceptions import UnauthorizedRequestException, NotFoundException
 from app.mappings.user_mappings import user_to_user_response
 from app.services import email_service, user_service, user_token_service
 
 
 def get_user_password(db: Session, username: str) -> auth_dtos.Password:
 
-    user = db.query(models.User).filter(models.User.username == username).first()
-
-    if not user:
-        return None
+    user = user_service.get_user_by_username(db, username)
 
     response = auth_dtos.Password(
         password_hash=user.password_hash,
@@ -65,7 +63,7 @@ def forgot_password(db: Session, forgot_password_data: auth_dtos.ForgotPassword)
         "token": user_token.token
     }
 
-    email_service.send_email(forgot_password_data.email, FORGOT_PASSWORD_TEMPLATE, payload)
+    email_service.send_email(user.email, FORGOT_PASSWORD_TEMPLATE, payload)
 
 
 def reset_password(db: Session, reset_password_data: auth_dtos.ResetPassword) -> user_dtos.UserResponse:
@@ -84,28 +82,33 @@ def reset_password(db: Session, reset_password_data: auth_dtos.ResetPassword) ->
     return user_to_user_response(user)
 
 
-def create_access_token(create_token_data: auth_dtos.CreateToken) -> auth_dtos.Token:
-    data = {"sub": create_token_data.username}
+def get_access_token(db: Session, login_data: auth_dtos.Login) -> auth_dtos.Token:
 
-    if create_token_data.expires:
-        expire = datetime.utcnow() + timedelta(minutes=create_token_data.expires)
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    if not authenticate_user(db, login_data.username, login_data.password):
+        raise UnauthorizedRequestException("Incorrect username or password")
 
-    data.update({"exp": expire})
-    encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=JWT_SIGNING_ALGORITHM)
+    expire = get_expiry(login_data.expires)
 
-    token = auth_dtos.Token(
-        access_token=encoded_jwt,
-        token_type="bearer"
-    )
+    data = {"sub": login_data.username, "exp": expire}
+    return generate_access_token(data)
 
-    return token
+
+def get_access_token_for_external_login(db: Session, external_login_data: auth_dtos.ExternalLogin) -> auth_dtos.Token:
+
+    username = external_login_data.email if external_login_data.email else external_login_data.phone_number
+
+    try:
+        user_service.get_user_by_username(db, username)
+    except NotFoundException:
+        user_service.create_social_user(db, external_login_data)
+
+    expire = get_expiry(external_login_data.expires)
+
+    data = {"sub": username, "exp": expire}
+    return generate_access_token(data)
 
 
 def decode_jwt(db: Session, token: str) -> dict:
-
-    decoded_token = {}
 
     try:
         decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[JWT_SIGNING_ALGORITHM])
@@ -134,3 +137,15 @@ def verify_jwt(db: Session, token: str) -> bool:
         return False
 
     return True
+
+
+def get_expiry(expires: int):
+    if expires:
+        return datetime.utcnow() + timedelta(minutes=expires)
+
+    return datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+
+
+def generate_access_token(data: dict) -> auth_dtos.Token:
+    encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=JWT_SIGNING_ALGORITHM)
+    return auth_dtos.Token(access_token=encoded_jwt, token_type="bearer")

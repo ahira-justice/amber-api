@@ -31,15 +31,14 @@ controller = APIRouter(
         }
     }
 )
-async def create(
+async def create_game(
     game_data: game_dtos.GameCreate,
     request: Request,
     db: Session = Depends(get_db)
 ):
     """Create new game"""
 
-    new_game = game_service.create_game(db, request, game_data)
-    return new_game
+    return game_service.create_game(db, request, game_data)
 
 
 @controller.get(
@@ -55,18 +54,17 @@ async def create(
         }
     }
 )
-async def get_all(
+async def get_games(
     request: Request,
     db: Session = Depends(get_db)
 ):
     """Get games"""
 
-    games = game_service.get_games(db, request)
-    return games
+    return game_service.get_games(db, request)
 
 
 @controller.get(
-    path="/dailyleaderboard",
+    path="/daily-leaderboard",
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
@@ -78,17 +76,16 @@ async def get_all(
         }
     }
 )
-async def daily_leaderboard(
+async def get_daily_leaderboard(
     db: Session = Depends(get_db)
 ):
     """Get daily leaderboard"""
 
-    daily_leaderboard = game_service.get_daily_leaderboard(db)
-    return daily_leaderboard
+    return game_service.get_daily_leaderboard(db)
 
 
 @controller.get(
-    path="/weeklyleaderboard",
+    path="/weekly-leaderboard",
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
@@ -100,17 +97,16 @@ async def daily_leaderboard(
         }
     }
 )
-async def weekly_leaderboard(
+async def get_weekly_leaderboard(
     db: Session = Depends(get_db)
 ):
     """Get weekly leaderboard"""
 
-    weekly_leaderboard = game_service.get_weekly_leaderboard(db)
-    return weekly_leaderboard
+    return game_service.get_weekly_leaderboard(db)
 
 
 @controller.get(
-    path="/alltimeleaderboard",
+    path="/all-time-leaderboard",
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
@@ -122,13 +118,12 @@ async def weekly_leaderboard(
         }
     }
 )
-async def all_time_leaderboard(
+async def get_all_time_leaderboard(
     db: Session = Depends(get_db)
 ):
     """Get all-time leaderboard"""
 
-    all_time_leaderboard = game_service.get_all_time_leaderboard(db)
-    return all_time_leaderboard
+    return game_service.get_all_time_leaderboard(db)
 
 
 @controller.get(
@@ -153,12 +148,11 @@ async def all_time_leaderboard(
         }
     }
 )
-async def get(
+async def get_game(
     id: int,
     request: Request,
     db: Session = Depends(get_db)
 ):
     """Get game"""
 
-    game = game_service.get_game(db, id, request)
-    return game
+    return game_service.get_game(db, id, request)

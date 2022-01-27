@@ -52,53 +52,25 @@ def get_game(db: Session, id: int, request: Request) -> game_dtos.GameResponse:
     if not game:
         raise NotFoundException(message=f"Game with id: {id} does not exist")
 
-    if not current_user.is_admin and current_user.email != game.email:
-        raise ForbiddenException(current_user.email)
+    if not current_user.is_admin and current_user.username != game.user.username:
+        raise ForbiddenException(current_user.username)
 
-    return game
+    return game_to_game_response(game)
 
 
 def get_daily_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
 
-    response = []
-    today = datetime.today().date()
+    today = datetime.today()
 
-    games = db.query(models.Game)
-
-    games = games.filter(models.Game.created_on >= today)
-    games = games.order_by(desc(models.Game.score), models.Game.created_on).all()
-
-    games = utils.remove_duplicates(games)
-
-    games.sort(key=lambda x: x.created_on)
-    games.sort(key=lambda x: x.score, reverse=True)
-
-    for game in games:
-        response.append(game_to_game_response(game))
-
-    return response
+    return get_leaderboard(db, today)
 
 
 def get_weekly_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
 
-    response = []
-    today = datetime.today().date()
-    weekstart = today + timedelta(days=-today.weekday())
+    today = datetime.today()
+    week_start = today + timedelta(days=-today.weekday())
 
-    games = db.query(models.Game)
-
-    games = games.filter(models.Game.created_on >= weekstart)
-    games = games.order_by(desc(models.Game.score), models.Game.created_on).all()
-
-    games = utils.remove_duplicates(games)
-
-    games.sort(key=lambda x: x.created_on)
-    games.sort(key=lambda x: x.score, reverse=True)
-
-    for game in games:
-        response.append(game_to_game_response(game))
-
-    return response
+    return get_leaderboard(db, week_start)
 
 
 def get_all_time_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
@@ -122,13 +94,30 @@ def get_all_time_leaderboard(db: Session) -> List[game_dtos.GameResponse]:
     return response
 
 
-def get_game_by_id(db: Session, id: int) -> game_dtos.GameResponse:
+def get_leaderboard(db: Session, limit: datetime) -> List[game_dtos.GameResponse]:
+    response = []
+
+    games = db.query(models.Game)
+
+    games = games.filter(models.Game.created_on >= limit)
+    games = games.order_by(desc(models.Game.score), models.Game.created_on).all()
+
+    games = utils.remove_duplicates(games)
+
+    games.sort(key=lambda x: x.created_on)
+    games.sort(key=lambda x: x.score, reverse=True)
+
+    for game in games:
+        response.append(game_to_game_response(game))
+
+    return response
+
+
+def get_game_by_id(db: Session, id: int) -> models.Game:
 
     game = db.query(models.Game).filter(models.Game.id == id).first()
 
     if not game:
-        return None
+        raise NotFoundException(message=f"Game with id: {id} does not exist")
 
-    response = game_to_game_response(game)
-
-    return response
+    return game

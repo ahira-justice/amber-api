@@ -7,7 +7,7 @@ from loguru_logging_intercept import setup_loguru_logging_intercept as logging_i
 
 from app.controllers.auth_controller import controller as auth_controller
 from app.controllers.user_controller import controller as user_controller
-from app.controllers.user_token_controller import controller as  user_token_controller
+from app.controllers.user_token_controller import controller as user_token_controller
 from app.controllers.game_controller import controller as game_controller
 from app.data.migrations_manager import migrate_database
 from app.domain.config import ENVIRONMENT, SQLALCHEMY_DATABASE_URL
@@ -22,7 +22,7 @@ logging_intercept(
 )
 
 
-if (ENVIRONMENT != "TEST"):
+if ENVIRONMENT != "TEST":
     migrate_database(MIGRATIONS_DIR, ALEMBIC_INI_DIR, SQLALCHEMY_DATABASE_URL)
 
 

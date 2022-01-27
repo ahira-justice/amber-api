@@ -7,6 +7,7 @@ from app.domain.database import get_db
 from app.dtos import error_dtos, user_token_dtos
 from app.services import user_token_service
 
+
 controller = APIRouter(
     prefix=USER_TOKENS_URL,
     tags=["User Tokens"]

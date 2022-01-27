@@ -23,15 +23,13 @@ def create_user(db: Session, user_data: user_dtos.UserCreate) -> user_dtos.UserR
     return user_to_user_response(user)
 
 
-def create_social_user(db: Session, external_login_data: auth_dtos.ExternalLogin) -> user_dtos.UserResponse:
+def create_social_user(db: Session, external_login_data: auth_dtos.ExternalLogin):
 
     user = external_login_to_user(external_login_data)
 
     db.add(user)
     db.commit()
     db.refresh(user)
-
-    return user_to_user_response(user)
 
 
 def seed_user(db: Session, email: EmailStr, first_name: str, last_name: str, password: str) -> user_dtos.UserResponse:
@@ -59,7 +57,7 @@ def set_super_admin(db: Session, id: int):
     return user_to_user_response(user)
 
 
-def change_user_admin_status(db: Session, id: int, user_admin_status: user_dtos.UserAdminStatus, request: Request) -> user_dtos.UserResponse:
+def change_admin_status(db: Session, id: int, user_admin_status: user_dtos.UserAdminStatus, request: Request) -> user_dtos.UserResponse:
 
     current_user = get_current_user(db, request)
 
@@ -81,7 +79,7 @@ def change_user_admin_status(db: Session, id: int, user_admin_status: user_dtos.
     return response
 
 
-def change_user_avatar(db: Session, user_avatar: user_dtos.UserAvatar, request: Request) -> user_dtos.UserResponse:
+def set_user_avatar(db: Session, user_avatar: user_dtos.UserAvatar, request: Request) -> user_dtos.UserResponse:
 
     current_user = get_current_user(db, request)
 
