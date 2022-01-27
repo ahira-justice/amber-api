@@ -5,8 +5,7 @@ from app.domain.constants import AUTH_URL
 from app.domain.database import get_db
 from app.dtos import auth_dtos, user_dtos
 from app.dtos import error_dtos
-from app.services import auth_service, user_service
-
+from app.services import auth_service
 
 controller = APIRouter(
     prefix=AUTH_URL,
