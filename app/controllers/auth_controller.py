@@ -7,7 +7,7 @@ from app.dtos import auth_dtos, user_dtos
 from app.dtos import error_dtos
 from app.exceptions.app_exceptions import UnauthorizedRequestException
 from app.mappings.auth_mappings import external_login_to_create_token, login_to_create_token
-from app.services import auth_service, jwt_service, user_service
+from app.services import auth_service, user_service
 
 
 controller = APIRouter(
@@ -41,7 +41,7 @@ async def login(
         raise UnauthorizedRequestException("Incorrect username or password")
 
     create_token_data = login_to_create_token(login_data)
-    token = jwt_service.create_access_token(create_token_data)
+    token = auth_service.create_access_token(create_token_data)
 
     return token
 
@@ -72,7 +72,7 @@ async def external_login(
         user_service.create_social_user(db, external_login_data)
 
     create_token_data = external_login_to_create_token(external_login_data)
-    token = jwt_service.create_access_token(create_token_data)
+    token = auth_service.create_access_token(create_token_data)
 
     return token
 

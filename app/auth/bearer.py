@@ -1,16 +1,16 @@
 from fastapi import Request
 from fastapi.security.http import HTTPBearer
-
-from app.data import models
 from app.domain.database import SessionLocal
+
 from app.exceptions.app_exceptions import UnauthorizedRequestException
-from app.services import jwt_service, user_service
+from app.services import auth_service
 
 
 class BearerAuth(HTTPBearer):
 
     def __init__(self, auto_error: bool = False):
         super().__init__(auto_error=auto_error)
+        self.db = SessionLocal()
 
     async def __call__(self, request: Request):
         scheme, token = request.headers.get("Authorization").split(" ")
@@ -21,27 +21,7 @@ class BearerAuth(HTTPBearer):
         if scheme.lower() != "bearer":
             raise UnauthorizedRequestException("Invalid authentication scheme")
 
-        if not self.verify_jwt(token):
+        if not auth_service.verify_jwt(self.db, token):
             raise UnauthorizedRequestException("Invalid or expired token")
-
-        return True
-
-    def verify_jwt(self, jwtoken: str) -> bool:
-
-        db = SessionLocal()
-
-        try:
-            payload = jwt_service.decode_jwt(jwtoken)
-        except:
-            payload = None
-
-        if not payload:
-            return False
-
-        username = payload.get("sub")
-        user = user_service.get_user_by_username(db, username)
-
-        if not user:
-            return False
 
         return True
