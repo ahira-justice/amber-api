@@ -19,15 +19,9 @@ controller = APIRouter(
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
-        200: {
-            "model": bool
-        },
-        401: {
-            "model": error_dtos.ErrorResponse
-        },
-        422: {
-            "model": error_dtos.ValidationErrorResponse
-        }
+        200: {"model": bool},
+        401: {"model": error_dtos.ErrorResponse},
+        422: {"model": error_dtos.ValidationErrorResponse}
     }
 )
 async def verify_user_token(

@@ -20,21 +20,15 @@ controller = APIRouter(
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
-        200: {
-            "model": game_dtos.GameResponse
-        },
-        401: {
-            "model": error_dtos.ErrorResponse
-        },
-        422: {
-            "model": error_dtos.ValidationErrorResponse
-        }
+        200: {"model": game_dtos.GameResponse},
+        401: {"model": error_dtos.ErrorResponse},
+        422: {"model": error_dtos.ValidationErrorResponse}
     }
 )
 async def create_game(
-    game_data: game_dtos.GameCreate,
-    request: Request,
-    db: Session = Depends(get_db)
+        game_data: game_dtos.GameCreate,
+        request: Request,
+        db: Session = Depends(get_db)
 ):
     """Create new game"""
 
@@ -46,17 +40,13 @@ async def create_game(
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
-        200: {
-            "model": List[game_dtos.GameResponse]
-        },
-        401: {
-            "model": error_dtos.ErrorResponse
-        }
+        200: {"model": List[game_dtos.GameResponse]},
+        401: {"model": error_dtos.ErrorResponse}
     }
 )
 async def get_games(
-    request: Request,
-    db: Session = Depends(get_db)
+        request: Request,
+        db: Session = Depends(get_db)
 ):
     """Get games"""
 
@@ -68,16 +58,12 @@ async def get_games(
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
-        200: {
-            "model": List[game_dtos.GameResponse]
-        },
-        401: {
-            "model": error_dtos.ErrorResponse
-        }
+        200: {"model": List[game_dtos.GameResponse]},
+        401: {"model": error_dtos.ErrorResponse}
     }
 )
 async def get_daily_leaderboard(
-    db: Session = Depends(get_db)
+        db: Session = Depends(get_db)
 ):
     """Get daily leaderboard"""
 
@@ -89,16 +75,12 @@ async def get_daily_leaderboard(
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
-        200: {
-            "model": List[game_dtos.GameResponse]
-        },
-        401: {
-            "model": error_dtos.ErrorResponse
-        }
+        200: {"model": List[game_dtos.GameResponse]},
+        401: {"model": error_dtos.ErrorResponse}
     }
 )
 async def get_weekly_leaderboard(
-    db: Session = Depends(get_db)
+        db: Session = Depends(get_db)
 ):
     """Get weekly leaderboard"""
 
@@ -110,16 +92,12 @@ async def get_weekly_leaderboard(
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
-        200: {
-            "model": List[game_dtos.GameResponse]
-        },
-        401: {
-            "model": error_dtos.ErrorResponse
-        }
+        200: {"model": List[game_dtos.GameResponse]},
+        401: {"model": error_dtos.ErrorResponse}
     }
 )
 async def get_all_time_leaderboard(
-    db: Session = Depends(get_db)
+        db: Session = Depends(get_db)
 ):
     """Get all-time leaderboard"""
 
@@ -131,27 +109,17 @@ async def get_all_time_leaderboard(
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
-        200: {
-            "model": game_dtos.GameResponse
-        },
-        401: {
-            "model": error_dtos.ErrorResponse
-        },
-        403: {
-            "model": error_dtos.ErrorResponse
-        },
-        404: {
-            "model": error_dtos.ErrorResponse
-        },
-        422: {
-            "model": error_dtos.ValidationErrorResponse
-        }
+        200: {"model": game_dtos.GameResponse},
+        401: {"model": error_dtos.ErrorResponse},
+        403: {"model": error_dtos.ErrorResponse},
+        404: {"model": error_dtos.ErrorResponse},
+        422: {"model": error_dtos.ValidationErrorResponse}
     }
 )
 async def get_game(
-    id: int,
-    request: Request,
-    db: Session = Depends(get_db)
+        id: int,
+        request: Request,
+        db: Session = Depends(get_db)
 ):
     """Get game"""
 
