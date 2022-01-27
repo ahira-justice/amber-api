@@ -5,7 +5,7 @@ from typing import List
 from app.auth.bearer import BearerAuth
 from app.domain.constants import GAMES_URL
 from app.domain.database import get_db
-from app.dtos import error
+from app.dtos import error_dtos
 from app.dtos import game_dtos
 from app.services import game_service
 
@@ -24,10 +24,10 @@ controller = APIRouter(
             "model": game_dtos.GameResponse
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         422: {
-            "model": error.ValidationErrorResponse
+            "model": error_dtos.ValidationErrorResponse
         }
     }
 )
@@ -51,7 +51,7 @@ async def create(
             "model": List[game_dtos.GameResponse]
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         }
     }
 )
@@ -74,7 +74,7 @@ async def get_all(
             "model": List[game_dtos.GameResponse]
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         }
     }
 )
@@ -96,7 +96,7 @@ async def daily_leaderboard(
             "model": List[game_dtos.GameResponse]
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         }
     }
 )
@@ -118,7 +118,7 @@ async def weekly_leaderboard(
             "model": List[game_dtos.GameResponse]
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         }
     }
 )
@@ -140,16 +140,16 @@ async def all_time_leaderboard(
             "model": game_dtos.GameResponse
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         403: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         404: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         422: {
-            "model": error.ValidationErrorResponse
+            "model": error_dtos.ValidationErrorResponse
         }
     }
 )

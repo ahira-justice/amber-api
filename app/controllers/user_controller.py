@@ -6,7 +6,7 @@ from app.domain.constants import USERS_URL
 from app.domain.database import get_db
 from app.auth.bearer import BearerAuth
 from app.dtos import user_dtos
-from app.dtos import error
+from app.dtos import error_dtos
 from app.services import user_service
 
 
@@ -24,7 +24,7 @@ controller = APIRouter(
             "model": user_dtos.UserResponse
         },
         422: {
-            "model": error.ValidationErrorResponse
+            "model": error_dtos.ValidationErrorResponse
         }
     }
 )
@@ -47,10 +47,10 @@ async def register(
             "model": List[user_dtos.UserResponse]
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         403: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         }
     }
 )
@@ -73,10 +73,10 @@ async def get_all(
             "model": user_dtos.UserResponse
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         422: {
-            "model": error.ValidationErrorResponse
+            "model": error_dtos.ValidationErrorResponse
         }
     }
 )
@@ -99,10 +99,10 @@ async def get_current_user(
             "model": user_dtos.UserResponse
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         422: {
-            "model": error.ValidationErrorResponse
+            "model": error_dtos.ValidationErrorResponse
         }
     }
 )
@@ -126,16 +126,16 @@ async def set_user_avatar(
             "model": user_dtos.UserResponse
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         403: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         404: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         422: {
-            "model": error.ValidationErrorResponse
+            "model": error_dtos.ValidationErrorResponse
         }
     }
 )
@@ -159,16 +159,16 @@ async def get(
             "model": user_dtos.UserResponse
         },
         400: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         404: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         422: {
-            "model": error.ValidationErrorResponse
+            "model": error_dtos.ValidationErrorResponse
         }
     }
 )
@@ -192,19 +192,19 @@ async def update(
             "model": user_dtos.UserResponse
         },
         400: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         403: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         404: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         422: {
-            "model": error.ValidationErrorResponse
+            "model": error_dtos.ValidationErrorResponse
         }
     }
 )
