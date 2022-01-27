@@ -4,7 +4,7 @@ from sqlalchemy.orm.session import Session
 from app.auth.bearer import BearerAuth
 from app.domain.constants import USER_TOKENS_URL
 from app.domain.database import get_db
-from app.dtos import error, user_token_dtos
+from app.dtos import error_dtos, user_token_dtos
 from app.services import user_token_service
 
 controller = APIRouter(
@@ -22,10 +22,10 @@ controller = APIRouter(
             "model": bool
         },
         401: {
-            "model": error.ErrorResponse
+            "model": error_dtos.ErrorResponse
         },
         422: {
-            "model": error.ValidationErrorResponse
+            "model": error_dtos.ValidationErrorResponse
         }
     }
 )
