@@ -18,15 +18,9 @@ controller = APIRouter(
     path="/login",
     status_code=200,
     responses={
-        200: {
-            "model": auth_dtos.Token
-        },
-        401: {
-            "model": error_dtos.ErrorResponse
-        },
-        422: {
-            "model": error_dtos.ValidationErrorResponse
-        }
+        200: {"model": auth_dtos.Token},
+        401: {"model": error_dtos.ErrorResponse},
+        422: {"model": error_dtos.ValidationErrorResponse}
     }
 )
 async def get_access_token(
@@ -42,12 +36,8 @@ async def get_access_token(
     path="/external-login",
     status_code=200,
     responses={
-        200: {
-            "model": auth_dtos.Token
-        },
-        422: {
-            "model": error_dtos.ValidationErrorResponse
-        }
+        200: {"model": auth_dtos.Token},
+        422: {"model": error_dtos.ValidationErrorResponse}
     }
 )
 async def get_access_token_for_external_login(
@@ -64,12 +54,8 @@ async def get_access_token_for_external_login(
     status_code=204,
     responses={
         204: {},
-        404: {
-            "model": error_dtos.ErrorResponse
-        },
-        422: {
-            "model": error_dtos.ValidationErrorResponse
-        }
+        404: {"model": error_dtos.ErrorResponse},
+        422: {"model": error_dtos.ValidationErrorResponse}
     }
 )
 async def forgot_password(
@@ -85,15 +71,9 @@ async def forgot_password(
     path="/reset-password",
     status_code=200,
     responses={
-        200: {
-            "model": user_dtos.UserResponse
-        },
-        404: {
-            "model": error_dtos.ErrorResponse
-        },
-        422: {
-            "model": error_dtos.ValidationErrorResponse
-        }
+        200: {"model": user_dtos.UserResponse},
+        404: {"model": error_dtos.ErrorResponse},
+        422: {"model": error_dtos.ValidationErrorResponse}
     }
 )
 async def reset_password(
