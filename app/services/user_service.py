@@ -9,7 +9,7 @@ from app.commonhelper import utils
 from app.exceptions.app_exceptions import BadRequestException, ForbiddenException, NotFoundException
 from app.mappings.auth_mappings import external_login_to_user
 from app.mappings.user_mappings import user_create_to_user, user_to_user_response
-from app.services import jwt_service
+from app.services import auth_service
 
 
 def create_user(db: Session, user_data: user_dtos.UserCreate) -> user_dtos.UserResponse:
@@ -187,7 +187,5 @@ def get_user_by_id(db: Session, id: int) -> models.User:
 def get_username_from_token(request: Request) -> EmailStr:
 
     token = request.headers.get("Authorization").split(" ")[1]
-    payload = jwt_service.decode_jwt(token)
-    username = payload.get("sub")
-
-    return username
+    payload = auth_service.decode_jwt(token)
+    return payload.get("sub")

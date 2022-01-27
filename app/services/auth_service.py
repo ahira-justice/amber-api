@@ -1,12 +1,15 @@
 import hashlib
 import string
+import jwt
+import time
 
+from datetime import datetime, timedelta
 from sqlalchemy.orm.session import Session
-from app.commonhelper import utils
 
+from app.commonhelper import utils
 from app.data import models
 from app.data.enums import UserTokenType
-from app.domain.config import USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES, USER_TOKEN_RESET_PASSWORD_LENGTH
+from app.domain.config import USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES, USER_TOKEN_RESET_PASSWORD_LENGTH, ACCESS_TOKEN_EXPIRE_MINUTES, JWT_SIGNING_ALGORITHM, SECRET_KEY
 from app.domain.constants import FORGOT_PASSWORD_TEMPLATE
 from app.dtos import auth_dtos, user_dtos
 from app.mappings.user_mappings import user_to_user_response
@@ -78,3 +81,57 @@ def reset_password(db: Session, reset_password_data: auth_dtos.ResetPassword) ->
     db.refresh(user)
 
     return user_to_user_response(user)
+
+
+def create_access_token(create_token_data: auth_dtos.CreateToken) -> auth_dtos.Token:
+    data = {"sub": create_token_data.username}
+
+    if create_token_data.expires:
+        expire = datetime.utcnow() + timedelta(minutes=create_token_data.expires)
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+
+    data.update({"exp": expire})
+    encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=JWT_SIGNING_ALGORITHM)
+
+    token = auth_dtos.Token(
+        access_token=encoded_jwt,
+        token_type="bearer"
+    )
+
+    return token
+
+
+def decode_jwt(db: Session, token: str) -> dict:
+
+    decoded_token = {}
+
+    try:
+        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[JWT_SIGNING_ALGORITHM])
+    except jwt.PyJWTError:
+        return {}
+
+    username = decoded_token.get("sub")
+    if not username:
+        return {}
+
+    user = user_service.get_user_by_username(db, username)
+    if not user:
+        return {}
+
+    expiry = decoded_token.get("exp")
+
+    if expiry < time.time():
+        return {}
+
+    return decoded_token
+
+    
+
+
+def verify_jwt(db: Session, token: str) -> bool:
+
+    if not decode_jwt(db, token):
+        return False
+
+    return True
