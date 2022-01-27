@@ -11,7 +11,7 @@ from app.services import user_service
 
 def generate_token(db: Session, length: int, keyspace: str, expiry: int, token_type: UserTokenType, user_id: int) -> UserToken:
 
-    user = user_service.get_user_by_id(user_id)
+    user = user_service.get_user_by_id(db, user_id)
 
     validate_expiry(expiry)
     delete_old_token_if_exists(db, user.id, token_type)
