@@ -17,8 +17,9 @@ Base = declarative_base()
 def get_db():
     """Provide db session to path operation functions"""
 
+    db = SessionLocal()
+
     try:
-        db = SessionLocal()
         yield db
     finally:
         db.close()

@@ -59,7 +59,6 @@ class UserCreate(BaseModel):
 
         return instagram
 
-
     @validator("password")
     def password_is_not_null(cls, password):
 

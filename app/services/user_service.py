@@ -95,7 +95,7 @@ def set_user_avatar(db: Session, user_avatar: user_dtos.UserAvatar, request: Req
 
 def update_user(db: Session, id: int, request: Request, user_data: user_dtos.UserUpdate) -> user_dtos.UserResponse:
 
-    username = get_username_from_token(request)
+    username = get_username_from_token(db, request)
 
     password_hash, password_salt = utils.generate_hash_and_salt(user_data.password)
 
@@ -110,7 +110,7 @@ def update_user(db: Session, id: int, request: Request, user_data: user_dtos.Use
     user_data_username = user_data.email if user_data.email else user_data.phone_number
 
     if get_user_by_username(db, user_data_username) and user.username != user_data_username:
-        raise BadRequestException(f"Cannot update username to '{user_data_username}'. User with username: '{user_data_username}' already exists")
+        raise BadRequestException(f"Cannot update username. User with username: '{user_data_username}' already exists")
 
     user.username = user_data_username
     user.email = user_data.email
@@ -156,7 +156,7 @@ def get_user(db: Session, id: int, request: Request) -> user_dtos.UserResponse:
 
 def get_current_user(db: Session, request: Request) -> user_dtos.UserResponse:
 
-    username = get_username_from_token(request)
+    username = get_username_from_token(db, request)
     user = get_user_by_username(db, username)
 
     return user_to_user_response(user)
@@ -182,8 +182,8 @@ def get_user_by_id(db: Session, id: int) -> models.User:
     return user
 
 
-def get_username_from_token(request: Request) -> EmailStr:
+def get_username_from_token(db: Session, request: Request) -> EmailStr:
 
     token = request.headers.get("Authorization").split(" ")[1]
-    payload = auth_service.decode_jwt(token)
+    payload = auth_service.decode_jwt(db, token)
     return payload.get("sub")

@@ -1,5 +1,5 @@
 from app.data import models
-from app.dtos import auth_dtos, user_dtos
+from app.dtos import user_dtos
 from app.commonhelper import utils
 
 

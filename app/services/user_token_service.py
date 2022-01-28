@@ -42,7 +42,7 @@ def use_token(db: Session, user_id: int, token: str, token_type: UserTokenType):
 
 def verify_user_token(db: Session, request: VerifyUserTokenRequest) -> bool:
 
-    user = user_service.get_user_by_username(request.username)
+    user = user_service.get_user_by_username(db, request.username)
 
     if request.token_type not in UserTokenType.__members__:
         raise BadRequestException("Invalid token type")

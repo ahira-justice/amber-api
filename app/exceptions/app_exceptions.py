@@ -49,7 +49,7 @@ class SystemErrorException(AppDomainException):
         code = "SystemError"
 
         if not message:
-            message = "An unexpected error occured. Please try again or confirm current operation status"
+            message = "An unexpected error occurred. Please try again or confirm current operation status"
 
         super().__init__(status_code, code, message)
 
