@@ -13,7 +13,12 @@ class BearerAuth(HTTPBearer):
         self.db = SessionLocal()
 
     async def __call__(self, request: Request):
-        scheme, token = request.headers.get("Authorization").split(" ")
+        authorization = request.headers.get("Authorization", None)
+
+        if not authorization:
+            raise UnauthorizedRequestException("Missing or malformed authorization header")
+
+        scheme, token = authorization.split(" ")
 
         if not scheme or not token:
             raise UnauthorizedRequestException("Missing or malformed authorization header")
