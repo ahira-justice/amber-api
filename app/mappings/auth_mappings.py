@@ -1,12 +1,12 @@
-from app.data import models
-from app.dtos import auth_dtos
+from app.data.models import User
+from app.dtos.auth_dtos import ExternalLogin
 
 
-def external_login_to_user(external_login: auth_dtos.ExternalLogin) -> models.User:
+def external_login_to_user(external_login: ExternalLogin) -> User:
 
     username = external_login.email if external_login.email else external_login.phone_number
 
-    result = models.User(
+    result = User(
         username=username,
         email=external_login.email,
         phone_number=external_login.phone_number,

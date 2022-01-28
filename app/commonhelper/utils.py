@@ -4,7 +4,7 @@ import random
 
 from typing import List, Tuple
 
-from app.data import models
+from app.data.models import Game
 
 
 def generate_hash_and_salt(password: str) -> Tuple[bytes, bytes]:
@@ -24,7 +24,7 @@ def generate_code(length: int, key_space: str) -> str:
     return ''.join((random.choice(key_space) for x in range(length)))
 
 
-def remove_duplicates(games: List[models.Game]) -> List[models.Game]:
+def remove_duplicates(games: List[Game]) -> List[Game]:
     result_dict = {}
 
     for game in games:

@@ -3,8 +3,9 @@ from pydantic import EmailStr
 from sqlalchemy.orm.session import Session
 from typing import List
 
-from app.data import models
-from app.dtos import auth_dtos, user_dtos
+from app.data.models import User
+from app.dtos.auth_dtos import ExternalLogin
+from app.dtos.user_dtos import UserCreate, UserResponse, UserAdminStatus, UserAvatar, UserUpdate
 from app.commonhelper import utils
 from app.exceptions.app_exceptions import BadRequestException, ForbiddenException, NotFoundException
 from app.mappings.auth_mappings import external_login_to_user
@@ -12,7 +13,7 @@ from app.mappings.user_mappings import user_create_to_user, user_to_user_respons
 from app.services import auth_service
 
 
-def create_user(db: Session, user_data: user_dtos.UserCreate) -> user_dtos.UserResponse:
+def create_user(db: Session, user_data: UserCreate) -> UserResponse:
 
     user = user_create_to_user(user_data)
 
@@ -23,7 +24,7 @@ def create_user(db: Session, user_data: user_dtos.UserCreate) -> user_dtos.UserR
     return user_to_user_response(user)
 
 
-def create_social_user(db: Session, external_login_data: auth_dtos.ExternalLogin):
+def create_social_user(db: Session, external_login_data: ExternalLogin):
 
     user = external_login_to_user(external_login_data)
 
@@ -32,9 +33,9 @@ def create_social_user(db: Session, external_login_data: auth_dtos.ExternalLogin
     db.refresh(user)
 
 
-def seed_user(db: Session, email: EmailStr, first_name: str, last_name: str, password: str) -> user_dtos.UserResponse:
+def seed_user(db: Session, email: EmailStr, first_name: str, last_name: str, password: str) -> UserResponse:
 
-    payload = user_dtos.UserCreate(
+    payload = UserCreate(
         email=email,
         first_name=first_name,
         last_name=last_name,
@@ -47,7 +48,7 @@ def seed_user(db: Session, email: EmailStr, first_name: str, last_name: str, pas
 
 def set_super_admin(db: Session, id: int):
 
-    user = db.query(models.User).filter(models.User.id == id).first()
+    user = db.query(User).filter(User.id == id).first()
     user.is_admin = True
     user.is_staff = True
 
@@ -57,7 +58,7 @@ def set_super_admin(db: Session, id: int):
     return user_to_user_response(user)
 
 
-def change_admin_status(db: Session, id: int, user_admin_status: user_dtos.UserAdminStatus, request: Request) -> user_dtos.UserResponse:
+def change_admin_status(db: Session, id: int, user_admin_status: UserAdminStatus, request: Request) -> UserResponse:
 
     current_user = get_current_user(db, request)
 
@@ -79,11 +80,11 @@ def change_admin_status(db: Session, id: int, user_admin_status: user_dtos.UserA
     return response
 
 
-def set_user_avatar(db: Session, user_avatar: user_dtos.UserAvatar, request: Request) -> user_dtos.UserResponse:
+def set_user_avatar(db: Session, user_avatar: UserAvatar, request: Request) -> UserResponse:
 
     current_user = get_current_user(db, request)
 
-    user = db.query(models.User).filter(models.User.id == current_user.id).first()
+    user = db.query(User).filter(User.id == current_user.id).first()
 
     user.avatar = user_avatar.avatar
 
@@ -93,7 +94,7 @@ def set_user_avatar(db: Session, user_avatar: user_dtos.UserAvatar, request: Req
     return user_to_user_response(user)
 
 
-def update_user(db: Session, id: int, request: Request, user_data: user_dtos.UserUpdate) -> user_dtos.UserResponse:
+def update_user(db: Session, id: int, request: Request, user_data: UserUpdate) -> UserResponse:
 
     username = get_username_from_token(db, request)
 
@@ -126,7 +127,7 @@ def update_user(db: Session, id: int, request: Request, user_data: user_dtos.Use
     return user_to_user_response(user)
 
 
-def get_users(db: Session, request: Request) -> List[user_dtos.UserResponse]:
+def get_users(db: Session, request: Request) -> List[UserResponse]:
 
     response = []
 
@@ -135,7 +136,7 @@ def get_users(db: Session, request: Request) -> List[user_dtos.UserResponse]:
     if not current_user.is_admin:
         raise ForbiddenException(current_user.username)
 
-    users = db.query(models.User).all()
+    users = db.query(User).all()
 
     for user in users:
         response.append(user_to_user_response(user))
@@ -143,7 +144,7 @@ def get_users(db: Session, request: Request) -> List[user_dtos.UserResponse]:
     return response
 
 
-def get_user(db: Session, id: int, request: Request) -> user_dtos.UserResponse:
+def get_user(db: Session, id: int, request: Request) -> UserResponse:
 
     current_user = get_current_user(db, request)
     user = get_user_by_id(db, id)
@@ -154,7 +155,7 @@ def get_user(db: Session, id: int, request: Request) -> user_dtos.UserResponse:
     return user_to_user_response(user)
 
 
-def get_current_user(db: Session, request: Request) -> user_dtos.UserResponse:
+def get_current_user(db: Session, request: Request) -> UserResponse:
 
     username = get_username_from_token(db, request)
     user = get_user_by_username(db, username)
@@ -162,9 +163,9 @@ def get_current_user(db: Session, request: Request) -> user_dtos.UserResponse:
     return user_to_user_response(user)
 
 
-def get_user_by_username(db: Session, username: str) -> models.User:
+def get_user_by_username(db: Session, username: str) -> User:
 
-    user = db.query(models.User).filter(models.User.username == username).first()
+    user = db.query(User).filter(User.username == username).first()
 
     if not user:
         raise NotFoundException(message=f"User with username: {username} does not exist")
@@ -172,9 +173,9 @@ def get_user_by_username(db: Session, username: str) -> models.User:
     return user
 
 
-def get_user_by_id(db: Session, id: int) -> models.User:
+def get_user_by_id(db: Session, id: int) -> User:
 
-    user = db.query(models.User).filter(models.User.id == id).first()
+    user = db.query(User).filter(User.id == id).first()
 
     if not user:
         raise NotFoundException(message=f"User with id: {id} does not exist")

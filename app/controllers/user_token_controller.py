@@ -4,7 +4,8 @@ from sqlalchemy.orm.session import Session
 from app.auth.bearer import BearerAuth
 from app.domain.constants import USER_TOKENS_URL
 from app.domain.database import get_db
-from app.dtos import error_dtos, user_token_dtos
+from app.dtos.error_dtos import ErrorResponse, ValidationErrorResponse
+from app.dtos.user_token_dtos import VerifyUserTokenRequest
 from app.services import user_token_service
 
 
@@ -20,12 +21,12 @@ controller = APIRouter(
     status_code=200,
     responses={
         200: {"model": bool},
-        401: {"model": error_dtos.ErrorResponse},
-        422: {"model": error_dtos.ValidationErrorResponse}
+        401: {"model": ErrorResponse},
+        422: {"model": ValidationErrorResponse}
     }
 )
 async def verify_user_token(
-    request: user_token_dtos.VerifyUserTokenRequest,
+    request: VerifyUserTokenRequest,
     db: Session = Depends(get_db)
 ):
     """Verify user token"""

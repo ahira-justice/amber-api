@@ -1,10 +1,10 @@
-from app.data import models
-from app.dtos import game_dtos
+from app.data.models import Game
+from app.dtos.game_dtos import GameCreate, GameResponse
 
 
-def game_to_game_response(game: models.Game) -> game_dtos.GameResponse:
+def game_to_game_response(game: Game) -> GameResponse:
 
-    result = game_dtos.GameResponse(
+    result = GameResponse(
         id=game.id,
         score=game.score,
         username=game.user.username,
@@ -17,9 +17,9 @@ def game_to_game_response(game: models.Game) -> game_dtos.GameResponse:
     return result
 
 
-def game_create_to_game(game_create: game_dtos.GameCreate) -> models.Game:
+def game_create_to_game(game_create: GameCreate) -> Game:
 
-    result = models.Game(
+    result = Game(
         score=game_create.score
     )
 

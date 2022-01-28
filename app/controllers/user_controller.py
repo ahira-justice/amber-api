@@ -5,8 +5,8 @@ from typing import List
 from app.domain.constants import USERS_URL
 from app.domain.database import get_db
 from app.auth.bearer import BearerAuth
-from app.dtos import user_dtos
-from app.dtos import error_dtos
+from app.dtos.user_dtos import UserResponse, UserCreate, UserAvatar, UserUpdate, UserAdminStatus
+from app.dtos.error_dtos import ErrorResponse, ValidationErrorResponse
 from app.services import user_service
 
 
@@ -20,12 +20,12 @@ controller = APIRouter(
     path="",
     status_code=200,
     responses={
-        200: {"model": user_dtos.UserResponse},
-        422: {"model": error_dtos.ValidationErrorResponse}
+        200: {"model": UserResponse},
+        422: {"model": ValidationErrorResponse}
     }
 )
 async def create_user(
-        user_data: user_dtos.UserCreate,
+        user_data: UserCreate,
         db: Session = Depends(get_db)
 ):
     """Create new user"""
@@ -38,9 +38,9 @@ async def create_user(
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
-        200: {"model": List[user_dtos.UserResponse]},
-        401: {"model": error_dtos.ErrorResponse},
-        403: {"model": error_dtos.ErrorResponse}
+        200: {"model": List[UserResponse]},
+        401: {"model": ErrorResponse},
+        403: {"model": ErrorResponse}
     }
 )
 async def get_users(
@@ -57,9 +57,9 @@ async def get_users(
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
-        200: {"model": user_dtos.UserResponse},
-        401: {"model": error_dtos.ErrorResponse},
-        422: {"model": error_dtos.ValidationErrorResponse}
+        200: {"model": UserResponse},
+        401: {"model": ErrorResponse},
+        422: {"model": ValidationErrorResponse}
     }
 )
 async def get_current_user(
@@ -76,13 +76,13 @@ async def get_current_user(
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
-        200: {"model": user_dtos.UserResponse},
-        401: {"model": error_dtos.ErrorResponse},
-        422: {"model": error_dtos.ValidationErrorResponse}
+        200: {"model": UserResponse},
+        401: {"model": ErrorResponse},
+        422: {"model": ValidationErrorResponse}
     }
 )
 async def set_user_avatar(
-        user_avatar: user_dtos.UserAvatar,
+        user_avatar: UserAvatar,
         request: Request,
         db: Session = Depends(get_db)
 ):
@@ -96,11 +96,11 @@ async def set_user_avatar(
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
-        200: {"model": user_dtos.UserResponse},
-        401: {"model": error_dtos.ErrorResponse},
-        403: {"model": error_dtos.ErrorResponse},
-        404: {"model": error_dtos.ErrorResponse},
-        422: {"model": error_dtos.ValidationErrorResponse}
+        200: {"model": UserResponse},
+        401: {"model": ErrorResponse},
+        403: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+        422: {"model": ValidationErrorResponse}
     }
 )
 async def get_user(
@@ -118,16 +118,16 @@ async def get_user(
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
-        200: {"model": user_dtos.UserResponse},
-        400: {"model": error_dtos.ErrorResponse},
-        401: {"model": error_dtos.ErrorResponse},
-        404: {"model": error_dtos.ErrorResponse},
-        422: {"model": error_dtos.ValidationErrorResponse}
+        200: {"model": UserResponse},
+        400: {"model": ErrorResponse},
+        401: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+        422: {"model": ValidationErrorResponse}
     }
 )
 async def update_user(
         id: int,
-        user_data: user_dtos.UserUpdate,
+        user_data: UserUpdate,
         request: Request,
         db: Session = Depends(get_db)
 ):
@@ -141,17 +141,17 @@ async def update_user(
     dependencies=[Depends(BearerAuth())],
     status_code=200,
     responses={
-        200: {"model": user_dtos.UserResponse},
-        400: {"model": error_dtos.ErrorResponse},
-        401: {"model": error_dtos.ErrorResponse},
-        403: {"model": error_dtos.ErrorResponse},
-        404: {"model": error_dtos.ErrorResponse},
-        422: {"model": error_dtos.ValidationErrorResponse}
+        200: {"model": UserResponse},
+        400: {"model": ErrorResponse},
+        401: {"model": ErrorResponse},
+        403: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+        422: {"model": ValidationErrorResponse}
     }
 )
 async def change_admin_status(
         id: int,
-        user_admin_status: user_dtos.UserAdminStatus,
+        user_admin_status: UserAdminStatus,
         request: Request,
         db: Session = Depends(get_db)
 ):

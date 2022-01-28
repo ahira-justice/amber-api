@@ -1,6 +1,6 @@
 from sqlalchemy.orm.session import Session
 
-from app.data import models
+from app.data.models import Game, User, UserToken
 from app.domain.database import Base, SessionLocal, engine
 
 
@@ -19,9 +19,9 @@ def setup():
 
 
 def clear_db_data(db: Session):
-    db.query(models.User).delete()
-    db.query(models.Game).delete()
-    db.query(models.UserToken).delete()
+    db.query(User).delete()
+    db.query(Game).delete()
+    db.query(UserToken).delete()
     db.commit()
 
     db.close()

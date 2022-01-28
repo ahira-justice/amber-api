@@ -1,11 +1,11 @@
-from app.data import models
-from app.dtos import user_dtos
+from app.data.models import User
+from app.dtos.user_dtos import UserResponse, UserCreate
 from app.commonhelper import utils
 
 
-def user_to_user_response(user: models.User) -> user_dtos.UserResponse:
+def user_to_user_response(user: User) -> UserResponse:
 
-    result = user_dtos.UserResponse(
+    result = UserResponse(
         id=user.id,
         username=user.username,
         email=user.email,
@@ -22,11 +22,11 @@ def user_to_user_response(user: models.User) -> user_dtos.UserResponse:
     return result
 
 
-def user_create_to_user(user_create: user_dtos.UserCreate) -> models.User:
+def user_create_to_user(user_create: UserCreate) -> User:
 
     password_hash, password_salt = utils.generate_hash_and_salt(user_create.password)
 
-    result = models.User(
+    result = User(
         username=user_create.email,
         email=user_create.email,
         phone_number=user_create.phone_number,

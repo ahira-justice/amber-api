@@ -1,5 +1,5 @@
 from app.domain.database import SessionLocal
-from app.data import models
+from app.data.models import User
 
 
 def is_not_null(value) -> bool:
@@ -11,7 +11,7 @@ def is_not_null(value) -> bool:
 
 def email_is_unique(email) -> bool:
     db = SessionLocal()
-    user = db.query(models.User).filter(models.User.email == email).first()
+    user = db.query(User).filter(User.email == email).first()
     db.close()
 
     if user:
@@ -22,7 +22,7 @@ def email_is_unique(email) -> bool:
 
 def instagram_is_unique(instagram) -> bool:
     db = SessionLocal()
-    user = db.query(models.User).filter(models.User.instagram == instagram).first()
+    user = db.query(User).filter(User.instagram == instagram).first()
     db.close()
 
     if user:

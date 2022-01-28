@@ -2,15 +2,15 @@ import string
 from sqlalchemy.orm.session import Session
 
 from app.commonhelper import utils
-from app.data import models
+from app.data.models import Game, User, UserToken
 from app.domain.config import USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES, USER_TOKEN_RESET_PASSWORD_LENGTH
 
 
-def create_user(db: Session) -> models.User:
+def create_user(db: Session) -> User:
 
     password_hash, password_salt = utils.generate_hash_and_salt("password")
 
-    user = models.User(
+    user = User(
         username="user@example.com",
         email="user@example.com",
         fname="Test",
@@ -27,11 +27,11 @@ def create_user(db: Session) -> models.User:
     return user
 
 
-def create_game(db: Session) -> models.Game:
+def create_game(db: Session) -> Game:
 
     user = create_user(db)
 
-    game = models.Game(
+    game = Game(
         score=100,
         user_id=user.id
     )
@@ -44,11 +44,11 @@ def create_game(db: Session) -> models.Game:
     return game
 
 
-def create_user_token(db: Session) -> models.UserToken:
+def create_user_token(db: Session) -> UserToken:
 
     user = create_user(db)
 
-    user_token = models.UserToken(
+    user_token = UserToken(
         token=utils.generate_code(USER_TOKEN_RESET_PASSWORD_LENGTH, string.ascii_letters),
         expiry=USER_TOKEN_RESET_PASSWORD_EXPIRE_MINUTES,
         user_id=user.id

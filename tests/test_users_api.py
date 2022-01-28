@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from app.data import models
+from app.data.models import User
 from app.domain.constants import USERS_URL
 from app.main import app
 from tests.domain import create_user
@@ -23,7 +23,7 @@ def test_can_create_user():
 
     response = client.post(f"{USERS_URL}", json=payload)
 
-    user_exists = db.query(models.User).filter(models.User.username == payload["email"]).first()
+    user_exists = db.query(User).filter(User.username == payload["email"]).first()
     db.close()
 
     assert response.status_code == 200
@@ -57,9 +57,9 @@ def test_social_login_user_can_obtain_auth_token():
         "last_name": "User"
     }
 
-    response = client.post(f"{USERS_URL}/externallogin", json=payload)
+    response = client.post(f"{USERS_URL}/external-login", json=payload)
 
-    user_exists = db.query(models.User).filter(models.User.username == payload["phone_number"]).first()
+    user_exists = db.query(User).filter(User.username == payload["phone_number"]).first()
     db.close()
 
     assert response.status_code == 200
@@ -73,9 +73,9 @@ def test_social_login_user_can_obtain_auth_token():
         "last_name": "User"
     }
 
-    response = client.post(f"{USERS_URL}/externallogin", json=payload)
+    response = client.post(f"{USERS_URL}/external-login", json=payload)
 
-    user_exists = db.query(models.User).filter(models.User.username == payload["email"]).first()
+    user_exists = db.query(User).filter(User.username == payload["email"]).first()
     db.close()
 
     assert response.status_code == 200

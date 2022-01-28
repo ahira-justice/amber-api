@@ -22,8 +22,8 @@ fileConfig(config.config_file_name, disable_existing_loggers=False)
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
-from app.data import models
-target_metadata = models.Base.metadata
+from app.data.models import Base
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

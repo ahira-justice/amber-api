@@ -4,7 +4,7 @@ from sqlalchemy.orm.session import Session
 
 from app.domain.config import ADMIN_EMAIL, ADMIN_FIRST_NAME, ADMIN_LAST_NAME, ADMIN_PASSWORD
 from app.domain.database import SessionLocal
-from app.data import models
+from app.data.models import User
 from loguru import logger
 from app.services import user_service
 
@@ -35,7 +35,7 @@ def seed():
 
 
 def seed_super_admin(db: Session):
-    admin_user = db.query(models.User).filter(models.User.email == ADMIN_EMAIL).first()
+    admin_user = db.query(User).filter(User.email == ADMIN_EMAIL).first()
 
     if not admin_user:
         admin_user = user_service.seed_user(db, ADMIN_EMAIL, ADMIN_FIRST_NAME, ADMIN_LAST_NAME, ADMIN_PASSWORD)
