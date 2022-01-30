@@ -12,5 +12,5 @@ class GameResponse(BaseModel):
     avatar: Optional[int]
 
 
-class GameCreate(BaseModel):
+class GameCreateRequest(BaseModel):
     score: int

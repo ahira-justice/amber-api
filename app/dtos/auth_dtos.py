@@ -5,13 +5,13 @@ from app.domain.config import ACCESS_TOKEN_EXPIRE_MINUTES
 from app.validators import user_validator
 
 
-class Login(BaseModel):
+class LoginRequest(BaseModel):
     username: str
     password: str
     expires: Optional[int] = ACCESS_TOKEN_EXPIRE_MINUTES
 
 
-class ExternalLogin(BaseModel):
+class ExternalLoginRequest(BaseModel):
     email: Optional[EmailStr]
     phone_number: Optional[str]
     first_name: str
@@ -48,21 +48,21 @@ class ExternalLogin(BaseModel):
         return first_name
 
 
-class ForgotPassword(BaseModel):
+class ForgotPasswordRequest(BaseModel):
     username: str
 
 
-class ResetPassword(BaseModel):
+class ResetPasswordRequest(BaseModel):
     username: str
     password: str
     token: str
 
 
-class Password(BaseModel):
+class PasswordDto(BaseModel):
     password_hash: bytes
     password_salt: bytes
 
 
-class Token(BaseModel):
+class AccessTokenResponse(BaseModel):
     access_token: str
     token_type: str

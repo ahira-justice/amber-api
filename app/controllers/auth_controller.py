@@ -3,7 +3,7 @@ from sqlalchemy.orm.session import Session
 
 from app.domain.constants import AUTH_URL
 from app.domain.database import get_db
-from app.dtos.auth_dtos import Token, ExternalLogin, ResetPassword, ForgotPassword, Login
+from app.dtos.auth_dtos import AccessTokenResponse, ExternalLoginRequest, ResetPasswordRequest, ForgotPasswordRequest, LoginRequest
 from app.dtos.user_dtos import UserResponse 
 from app.dtos.error_dtos import ErrorResponse, ValidationErrorResponse
 from app.services import auth_service
@@ -18,13 +18,13 @@ controller = APIRouter(
     path="/login",
     status_code=200,
     responses={
-        200: {"model": Token},
+        200: {"model": AccessTokenResponse},
         401: {"model": ErrorResponse},
         422: {"model": ValidationErrorResponse}
     }
 )
 async def get_access_token(
-    login_data: Login,
+    login_data: LoginRequest,
     db: Session = Depends(get_db)
 ):
     """Generate access token for valid credentials"""
@@ -36,12 +36,12 @@ async def get_access_token(
     path="/external-login",
     status_code=200,
     responses={
-        200: {"model": Token},
+        200: {"model": AccessTokenResponse},
         422: {"model": ValidationErrorResponse}
     }
 )
 async def get_access_token_for_external_login(
-    external_login_data: ExternalLogin,
+    external_login_data: ExternalLoginRequest,
     db: Session = Depends(get_db)
 ):
     """Generate access token for valid credentials for social login"""
@@ -59,7 +59,7 @@ async def get_access_token_for_external_login(
     }
 )
 async def forgot_password(
-    forgot_password_data: ForgotPassword,
+    forgot_password_data: ForgotPasswordRequest,
     db: Session = Depends(get_db)
 ):
     """Generate password reset link"""
@@ -77,7 +77,7 @@ async def forgot_password(
     }
 )
 async def reset_password(
-    reset_password_data: ResetPassword,
+    reset_password_data: ResetPasswordRequest,
     db: Session = Depends(get_db)
 ):
     """Reset user password"""

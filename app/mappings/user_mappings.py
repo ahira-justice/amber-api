@@ -1,5 +1,5 @@
 from app.data.models import User
-from app.dtos.user_dtos import UserResponse, UserCreate
+from app.dtos.user_dtos import UserResponse, UserCreateRequest
 from app.commonhelper import utils
 
 
@@ -22,7 +22,7 @@ def user_to_user_response(user: User) -> UserResponse:
     return result
 
 
-def user_create_to_user(user_create: UserCreate) -> User:
+def user_create_to_user(user_create: UserCreateRequest) -> User:
 
     password_hash, password_salt = utils.generate_hash_and_salt(user_create.password)
 

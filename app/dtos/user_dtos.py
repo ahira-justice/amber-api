@@ -18,15 +18,15 @@ class UserResponse(BaseModel):
     is_staff: bool = False
 
 
-class UserAdminStatus(BaseModel):
+class UserAdminStatusRequest(BaseModel):
     is_admin: bool = False
 
 
-class UserAvatar(BaseModel):
+class UserAvatarRequest(BaseModel):
     avatar: int
 
 
-class UserCreate(BaseModel):
+class UserCreateRequest(BaseModel):
     email: EmailStr
     phone_number: Optional[str]
     first_name: Optional[str]
@@ -68,7 +68,7 @@ class UserCreate(BaseModel):
         return password
 
 
-class UserUpdate(BaseModel):
+class UserUpdateRequest(BaseModel):
     email: EmailStr
     phone_number: str
     first_name: str

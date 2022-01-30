@@ -5,7 +5,7 @@ from typing import List
 from app.domain.constants import USERS_URL
 from app.domain.database import get_db
 from app.auth.bearer import BearerAuth
-from app.dtos.user_dtos import UserResponse, UserCreate, UserAvatar, UserUpdate, UserAdminStatus
+from app.dtos.user_dtos import UserResponse, UserCreateRequest, UserAvatarRequest, UserUpdateRequest, UserAdminStatusRequest
 from app.dtos.error_dtos import ErrorResponse, ValidationErrorResponse
 from app.services import user_service
 
@@ -25,7 +25,7 @@ controller = APIRouter(
     }
 )
 async def create_user(
-        user_data: UserCreate,
+        user_data: UserCreateRequest,
         db: Session = Depends(get_db)
 ):
     """Create new user"""
@@ -82,7 +82,7 @@ async def get_current_user(
     }
 )
 async def set_user_avatar(
-        user_avatar: UserAvatar,
+        user_avatar: UserAvatarRequest,
         request: Request,
         db: Session = Depends(get_db)
 ):
@@ -127,7 +127,7 @@ async def get_user(
 )
 async def update_user(
         id: int,
-        user_data: UserUpdate,
+        user_data: UserUpdateRequest,
         request: Request,
         db: Session = Depends(get_db)
 ):
@@ -151,7 +151,7 @@ async def update_user(
 )
 async def change_admin_status(
         id: int,
-        user_admin_status: UserAdminStatus,
+        user_admin_status: UserAdminStatusRequest,
         request: Request,
         db: Session = Depends(get_db)
 ):

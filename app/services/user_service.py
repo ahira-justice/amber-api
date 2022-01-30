@@ -4,8 +4,8 @@ from sqlalchemy.orm.session import Session
 from typing import List
 
 from app.data.models import User
-from app.dtos.auth_dtos import ExternalLogin
-from app.dtos.user_dtos import UserCreate, UserResponse, UserAdminStatus, UserAvatar, UserUpdate
+from app.dtos.auth_dtos import ExternalLoginRequest
+from app.dtos.user_dtos import UserCreateRequest, UserResponse, UserAdminStatusRequest, UserAvatarRequest, UserUpdateRequest
 from app.commonhelper import utils
 from app.exceptions.app_exceptions import BadRequestException, ForbiddenException, NotFoundException
 from app.mappings.auth_mappings import external_login_to_user
@@ -13,7 +13,7 @@ from app.mappings.user_mappings import user_create_to_user, user_to_user_respons
 from app.services import auth_service
 
 
-def create_user(db: Session, user_data: UserCreate) -> UserResponse:
+def create_user(db: Session, user_data: UserCreateRequest) -> UserResponse:
 
     user = user_create_to_user(user_data)
 
@@ -24,7 +24,7 @@ def create_user(db: Session, user_data: UserCreate) -> UserResponse:
     return user_to_user_response(user)
 
 
-def create_social_user(db: Session, external_login_data: ExternalLogin):
+def create_social_user(db: Session, external_login_data: ExternalLoginRequest):
 
     user = external_login_to_user(external_login_data)
 
@@ -35,7 +35,7 @@ def create_social_user(db: Session, external_login_data: ExternalLogin):
 
 def seed_user(db: Session, email: EmailStr, first_name: str, last_name: str, password: str) -> UserResponse:
 
-    payload = UserCreate(
+    payload = UserCreateRequest(
         email=email,
         first_name=first_name,
         last_name=last_name,
@@ -58,7 +58,7 @@ def set_super_admin(db: Session, id: int):
     return user_to_user_response(user)
 
 
-def change_admin_status(db: Session, id: int, user_admin_status: UserAdminStatus, request: Request) -> UserResponse:
+def change_admin_status(db: Session, id: int, user_admin_status: UserAdminStatusRequest, request: Request) -> UserResponse:
 
     current_user = get_current_user(db, request)
 
@@ -80,7 +80,7 @@ def change_admin_status(db: Session, id: int, user_admin_status: UserAdminStatus
     return response
 
 
-def set_user_avatar(db: Session, user_avatar: UserAvatar, request: Request) -> UserResponse:
+def set_user_avatar(db: Session, user_avatar: UserAvatarRequest, request: Request) -> UserResponse:
 
     current_user = get_current_user(db, request)
 
@@ -94,7 +94,7 @@ def set_user_avatar(db: Session, user_avatar: UserAvatar, request: Request) -> U
     return user_to_user_response(user)
 
 
-def update_user(db: Session, id: int, request: Request, user_data: UserUpdate) -> UserResponse:
+def update_user(db: Session, id: int, request: Request, user_data: UserUpdateRequest) -> UserResponse:
 
     username = get_username_from_token(db, request)
 

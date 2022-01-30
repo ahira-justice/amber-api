@@ -1,5 +1,5 @@
 from app.data.models import Game
-from app.dtos.game_dtos import GameCreate, GameResponse
+from app.dtos.game_dtos import GameCreateRequest, GameResponse
 
 
 def game_to_game_response(game: Game) -> GameResponse:
@@ -17,7 +17,7 @@ def game_to_game_response(game: Game) -> GameResponse:
     return result
 
 
-def game_create_to_game(game_create: GameCreate) -> Game:
+def game_create_to_game(game_create: GameCreateRequest) -> Game:
 
     result = Game(
         score=game_create.score

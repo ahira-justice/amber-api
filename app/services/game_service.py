@@ -7,13 +7,13 @@ from typing import List
 
 from app.data.models import Game
 from app.domain.config import ALL_TIME_LEADERBOARD_LIMIT
-from app.dtos.game_dtos import GameCreate, GameResponse
+from app.dtos.game_dtos import GameCreateRequest, GameResponse
 from app.exceptions.app_exceptions import ForbiddenException, NotFoundException
 from app.mappings.game_mappings import game_create_to_game, game_to_game_response
 from app.services import user_service
 
 
-def create_game(db: Session, request: Request, game_data: GameCreate) -> GameResponse:
+def create_game(db: Session, request: Request, game_data: GameCreateRequest) -> GameResponse:
     user = user_service.get_current_user(db, request)
     game = game_create_to_game(game_data)
     game.user_id = user.id

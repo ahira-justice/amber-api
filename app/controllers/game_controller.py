@@ -6,7 +6,7 @@ from app.auth.bearer import BearerAuth
 from app.domain.constants import GAMES_URL
 from app.domain.database import get_db
 from app.dtos.error_dtos import ErrorResponse, ValidationErrorResponse
-from app.dtos.game_dtos import GameResponse, GameCreate
+from app.dtos.game_dtos import GameResponse, GameCreateRequest
 from app.services import game_service
 
 controller = APIRouter(
@@ -26,7 +26,7 @@ controller = APIRouter(
     }
 )
 async def create_game(
-        game_data: GameCreate,
+        game_data: GameCreateRequest,
         request: Request,
         db: Session = Depends(get_db)
 ):
