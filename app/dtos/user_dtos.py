@@ -11,8 +11,6 @@ class UserResponse(BaseModel):
     phone_number: Optional[str]
     first_name: Optional[str]
     last_name: Optional[str]
-    instagram: Optional[str]
-    state: Optional[str]
     avatar: Optional[int]
     is_admin: bool = False
     is_staff: bool = False
@@ -31,8 +29,6 @@ class UserCreateRequest(BaseModel):
     phone_number: Optional[str]
     first_name: Optional[str]
     last_name: Optional[str]
-    instagram: Optional[str]
-    state: Optional[str]
     password: str
 
     @validator("email")
@@ -51,14 +47,6 @@ class UserCreateRequest(BaseModel):
 
         return email
 
-    @validator("instagram")
-    def instagram_is_unique(cls, instagram):
-
-        if not user_validator.instagram_is_unique(instagram):
-            raise ValueError("User with instagram handle: '{instagram}' already registered")
-
-        return instagram
-
     @validator("password")
     def password_is_not_null(cls, password):
 
@@ -73,7 +61,6 @@ class UserUpdateRequest(BaseModel):
     phone_number: str
     first_name: str
     last_name: str
-    instagram: str
     password: str
 
     @validator("email")
@@ -107,11 +94,3 @@ class UserUpdateRequest(BaseModel):
             raise ValueError("User first name cannot be null")
 
         return first_name
-
-    @validator("instagram")
-    def instagram_is_not_null(cls, instagram):
-
-        if not user_validator.is_not_null(instagram):
-            raise ValueError("User instagram handle cannot be null")
-
-        return instagram

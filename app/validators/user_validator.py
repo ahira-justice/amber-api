@@ -18,14 +18,3 @@ def email_is_unique(email) -> bool:
         return False
 
     return True
-
-
-def instagram_is_unique(instagram) -> bool:
-    db = SessionLocal()
-    user = db.query(User).filter(User.instagram == instagram).first()
-    db.close()
-
-    if user:
-        return False
-
-    return True

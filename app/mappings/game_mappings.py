@@ -10,7 +10,6 @@ def game_to_game_response(game: Game) -> GameResponse:
         username=game.user.username,
         first_name=game.user.fname,
         last_name=game.user.lname,
-        instagram=game.user.instagram,
         avatar=game.user.avatar
     )
 

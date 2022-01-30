@@ -8,7 +8,6 @@ class GameResponse(BaseModel):
     username: str
     first_name: Optional[str]
     last_name: Optional[str]
-    instagram: Optional[str]
     avatar: Optional[int]
 
 
