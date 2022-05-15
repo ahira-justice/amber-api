@@ -1,24 +1,23 @@
 from fastapi.testclient import TestClient
+from faker import Faker
 
 from app.data.models import User
 from app.domain.constants import USERS_URL
 from app.main import app
-from tests.domain import create_user
 from tests.utils import get_db
 
-
 client = TestClient(app)
+fake = Faker()
 
 
 def test_can_create_user():
-
     db = get_db()
 
     payload = {
-        "email": "user@example.com",
-        "first_name": "Test",
-        "last_name": "User",
-        "password": "password"
+        "email": fake.email(),
+        "first_name": fake.first_name(),
+        "last_name": fake.last_name(),
+        "password": fake.password()
     }
 
     response = client.post(f"{USERS_URL}", json=payload)
@@ -29,64 +28,3 @@ def test_can_create_user():
     assert response.status_code == 200
     assert response.json().get("username") == payload["email"]
     assert user_exists
-
-
-def test_user_can_obtain_auth_token():
-
-    db = get_db()
-    create_user(db)
-
-    payload = {
-        "username": "user@example.com",
-        "password": "password"
-    }
-
-    response = client.post(f"{USERS_URL}/login", json=payload)
-
-    assert response.status_code == 200
-    assert "access_token" in response.json()
-    assert "token_type" in response.json()
-
-
-def test_social_login_user_can_obtain_auth_token():
-    db = get_db()
-
-    payload = {
-        "phone_number": "08001234567",
-        "first_name": "Test",
-        "last_name": "User"
-    }
-
-    response = client.post(f"{USERS_URL}/external-login", json=payload)
-
-    user_exists = db.query(User).filter(User.username == payload["phone_number"]).first()
-    db.close()
-
-    assert response.status_code == 200
-    assert "access_token" in response.json()
-    assert "token_type" in response.json()
-    assert user_exists
-
-    payload = {
-        "email": "user@example.com",
-        "first_name": "Test",
-        "last_name": "User"
-    }
-
-    response = client.post(f"{USERS_URL}/external-login", json=payload)
-
-    user_exists = db.query(User).filter(User.username == payload["email"]).first()
-    db.close()
-
-    assert response.status_code == 200
-    assert "access_token" in response.json()
-    assert "token_type" in response.json()
-    assert user_exists
-
-
-def test_user_can_request_password_reset():
-    pass
-
-
-def test_user_can_reset_password():
-    pass

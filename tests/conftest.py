@@ -1,20 +1,15 @@
-import pytest
 import os
+
+import pytest
 
 from app.domain.config import ENVIRONMENT
 from app.domain.constants import TEST_DATABASE_FILE
-from tests.utils import get_db, setup, clear_db_data
+from tests.utils import setup
 
 
 @pytest.hookimpl()
 def pytest_sessionstart(session):
     setup()
-
-
-@pytest.hookimpl()
-def pytest_runtest_teardown(item, nextitem):
-    db = get_db()
-    clear_db_data(db)
 
 
 @pytest.hookimpl()
