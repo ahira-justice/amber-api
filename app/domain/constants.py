@@ -1,5 +1,6 @@
 MIGRATIONS_DIR = "app/migrations"
 ALEMBIC_INI_DIR = "alembic.ini"
+LOGGING_CONFIG_DIR = "logging.conf"
 
 DOCS_URL = "/api/v1/index.html"
 OPEN_API_URL = "/swagger/v1/swagger.json"

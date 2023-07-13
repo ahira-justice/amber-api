@@ -2,23 +2,27 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+from logging.config import fileConfig as configure_logging
 from loguru import logger
-from loguru_logging_intercept import setup_loguru_logging_intercept as logging_intercept
 
+from app.config.loguru_logging_intercept import setup_loguru_logging_intercept
 from app.controllers.auth_controller import controller as auth_controller
 from app.controllers.user_controller import controller as user_controller
 from app.controllers.user_token_controller import controller as user_token_controller
 from app.controllers.game_controller import controller as game_controller
 from app.data.migrations_manager import migrate_database
 from app.domain.config import ENVIRONMENT, SQLALCHEMY_DATABASE_URL
-from app.domain.constants import ALEMBIC_INI_DIR, DOCS_URL, MIGRATIONS_DIR, OPEN_API_URL
+from app.domain.constants import ALEMBIC_INI_DIR, LOGGING_CONFIG_DIR, DOCS_URL, MIGRATIONS_DIR, OPEN_API_URL
 from app.exceptions.app_exceptions import AppDomainException
 from app.exceptions.handlers import exception_handler, app_exception_handler, validation_exception_handler
 from app.middleware.handlers import http_logging_middleware
 
 
-logging_intercept(
-    modules=("uvicorn", "alembic", "sqlalchemy")
+configure_logging(LOGGING_CONFIG_DIR, disable_existing_loggers=False)
+setup_loguru_logging_intercept(
+    modules=(
+        "uvicorn", "uvicorn.access", "uvicorn.error", "alembic", "sqlalchemy.engine"
+        )
 )
 
 

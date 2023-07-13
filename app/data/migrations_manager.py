@@ -14,8 +14,7 @@ def migrate_database(script_location: str, alembic_ini_location: str, dsn: str) 
     logger.info(f"Running DB migrations in {script_location} on {dsn}")
 
     cfg = Config(alembic_ini_location)
-    cfg.set_main_option("script_location", script_location)
-    cfg.set_main_option("sqlalchemy.url", dsn)
+    cfg.attributes['configure_logger'] = False
 
     command.upgrade(cfg, "head")
 
