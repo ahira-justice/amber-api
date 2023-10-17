@@ -6,6 +6,7 @@ ENV PYTHONUNBUFFERED 1
 COPY ./app /app/app
 COPY ./requirements.txt /app
 COPY ./alembic.ini /app
+COPY ./logging.conf /app
 
 WORKDIR /app
 
